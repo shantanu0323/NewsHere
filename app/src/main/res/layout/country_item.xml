@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/country_dropdown_bg"
+        android:orientation="horizontal"
+        android:layout_marginBottom="2dp"
+        android:padding="5dp">
+
+        <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/ivFlag"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/india_in" />
+
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/tvCountry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:fontFamily="@font/roboto_regular"
+            android:gravity="left"
+            android:text="TextView"
+            android:textColor="@color/colorBackground"
+            android:textSize="14dp" />
+
+    </LinearLayout>
+</LinearLayout>
