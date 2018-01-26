@@ -1,16 +1,85 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.shaan.newshere.NewsFragment">
 
-    <TextView
-        android:id="@+id/textcount"
+    <ImageView
+        android:id="@+id/ivNewsCover"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/random_text"
-        android:textSize="30sp"
-        android:layout_gravity="center"
-        android:textColor="@color/colorAccent"/>
+        android:layout_height="240sp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/sample_news_cover"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/publishedAt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/published_at_bg"
+        android:fontFamily="@font/roboto_regular"
+        android:gravity="end"
+        android:padding="10sp"
+        android:text="- published on"
+        android:textColor="#fff"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivNewsCover" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_light"
+        android:padding="10sp"
+        android:text="Title"
+        android:textColor="@color/colorPrimary"
+        android:textSize="26sp"
+        app:layout_constraintTop_toBottomOf="@+id/ivNewsCover" />
+
+    <com.bluejamesbond.text.DocumentView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:documentView_insetPadding="10dp"
+        app:documentView_text="@string/sample_text"
+        app:documentView_textAlignment="justified"
+        app:documentView_textColor="#fff"
+        app:documentView_textFormat="plain"
+        app:documentView_textSize="18sp"
+        app:documentView_textSubPixel="true"
+        app:documentView_textTypefacePath="fonts/roboto_light.ttf"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="45sp"
+        android:fontFamily="@font/roboto_light"
+        android:padding="10sp"
+        android:text="- Author's Name"
+        android:textColor="@color/colorAccent2"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/readMore"
+        android:layout_width="wrap_content"
+        android:layout_height="35sp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/readmore_bg"
+        android:fontFamily="@font/roboto_light"
+        android:paddingBottom="-5dp"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        android:paddingTop="-5dp"
+        android:text="Read More"
+        android:textAllCaps="false"
+        android:textColor="@color/colorAccent2"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/author"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@id/author" />
+</android.support.constraint.ConstraintLayout>

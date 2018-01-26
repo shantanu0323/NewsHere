@@ -269,6 +269,8 @@ public class HomeActivity extends AppCompatActivity
 
             }
         });
+        viewPager.setPageTransformer(false, new FlipPageViewTransformer());
+
 
         bPrev.setOnClickListener(new View.OnClickListener() {
             @Override
