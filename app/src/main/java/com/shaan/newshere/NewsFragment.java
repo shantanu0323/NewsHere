@@ -28,8 +28,8 @@ public class NewsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_news, container, false);
         textView = (TextView) view.findViewById(R.id.textcount);
         Bundle bundle = getArguments();
-        String message = "" + bundle.getInt("count");
-        textView.setText("This is page no: " + message);
+        String message = "" + bundle.getInt("count") + ". " + bundle.getString("title");
+        textView.setText(message);
         return view;
     }
 

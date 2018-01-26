@@ -23,11 +23,11 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:fontFamily="@font/roboto_regular"
-                android:textColor="#fff"
-                android:text="Top-Headlines"
                 android:layout_gravity="left"
+                android:fontFamily="@font/roboto_regular"
                 android:gravity="center_vertical"
+                android:text="Top-Headlines"
+                android:textColor="#fff"
                 android:textSize="20dp" />
 
             <Spinner
@@ -38,11 +38,20 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/country_dropdown_bg"
-                android:gravity="center"/>
+                android:gravity="center" />
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_home" />
+
+    <ProgressBar
+        android:id="@+id/loading_indicator"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center" />
+
 
 </android.support.design.widget.CoordinatorLayout>

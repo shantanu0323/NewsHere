@@ -5,6 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Shaan on 26-01-18.
  */
@@ -12,16 +15,20 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 public class NewsAdapter extends FragmentStatePagerAdapter {
 
     private static final int MAXIMUM_PAGE = 20;
+    private List<News> newsList;
 
-    public NewsAdapter(FragmentManager fm) {
+    public NewsAdapter(FragmentManager fm, List<News> newsList) {
         super(fm);
+        this.newsList = newsList;
     }
 
     @Override
     public Fragment getItem(int position) {
         Fragment newsFragment = new NewsFragment();
+        String title = newsList.get(position).getTitle();
         Bundle bundle = new Bundle();
         bundle.putInt("count", position + 1);
+        bundle.putString("title", title);
         newsFragment.setArguments(bundle);
 
         return newsFragment;
