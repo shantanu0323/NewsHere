@@ -2,6 +2,7 @@ package com.shaan.newshere;
 
 import android.app.LoaderManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -28,7 +29,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity
@@ -198,8 +198,9 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.nav_categories) {
+            Intent intent = new Intent(getApplicationContext(),CategoryActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -270,6 +271,7 @@ public class HomeActivity extends AppCompatActivity
             }
         });
         viewPager.setPageTransformer(false, new FlipPageViewTransformer());
+//        viewPager.setRotation(90);
 
 
         bPrev.setOnClickListener(new View.OnClickListener() {

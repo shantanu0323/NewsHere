@@ -9,6 +9,7 @@
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:typeface">serif</item>
+        <item name="android:textAppearance">@style/my_tab_text</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -16,7 +17,23 @@
         <item name="windowNoTitle">true</item>
         <item name="android:typeface">serif</item>
     </style>
+    <!--Base.TextAppearance.AppCompat-->
+    <style name="my_tab_text" parent="Base.Widget.Design.TabLayout">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textSize">20sp</item>
+    </style>
 
+    <style name="MyCustomTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/MyCustomTabText</item>
+        <item name="tabSelectedTextColor">@style/MyCustomTabText</item>
+    </style>
+
+    <style name="MyCustomTabText" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <!--<item name="android:fontFamily">@font/roboto_regular</item>-->
+    </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
