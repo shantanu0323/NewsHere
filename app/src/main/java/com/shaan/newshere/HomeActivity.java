@@ -10,7 +10,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,6 +23,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -62,6 +67,7 @@ public class HomeActivity extends AppCompatActivity
     private ProgressBar loadingIndicator;
     private String previousCountryCode;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +89,19 @@ public class HomeActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
+        Menu m = navigationView.getMenu();
+
+        for (int i = 0; i < m.size(); i++) {
+
+            MenuItem mi = m.getItem(i);
+
+            SpannableString s = new SpannableString(mi.getTitle());
+            s.setSpan(new CustomTypefaceSpan("", ROBOTO_LIGHT), 0, s.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            mi.setTitle(s);
+        }
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -93,7 +111,7 @@ public class HomeActivity extends AppCompatActivity
                 if (TOP_HEADLINES_URL.endsWith("=")) {
                     TOP_HEADLINES_URL += COUNTRY_CODE;
                 } else {
-                    TOP_HEADLINES_URL = TOP_HEADLINES_URL.substring(0,TOP_HEADLINES_URL.length()-2) + COUNTRY_CODE;
+                    TOP_HEADLINES_URL = TOP_HEADLINES_URL.substring(0, TOP_HEADLINES_URL.length() - 2) + COUNTRY_CODE;
                 }
                 Log.i(TAG, "onItemSelected: CALLED : " + TOP_HEADLINES_URL);
                 initiateLoader();
@@ -106,7 +124,7 @@ public class HomeActivity extends AppCompatActivity
                 if (TOP_HEADLINES_URL.endsWith("=")) {
                     TOP_HEADLINES_URL += COUNTRY_CODE;
                 } else {
-                    TOP_HEADLINES_URL = TOP_HEADLINES_URL.substring(0,TOP_HEADLINES_URL.length()-2) + COUNTRY_CODE;
+                    TOP_HEADLINES_URL = TOP_HEADLINES_URL.substring(0, TOP_HEADLINES_URL.length() - 2) + COUNTRY_CODE;
                 }
                 Log.i(TAG, "onNothingSelected: CALLED : " + TOP_HEADLINES_URL);
                 initiateLoader();
@@ -148,7 +166,7 @@ public class HomeActivity extends AppCompatActivity
         if (index == 0) {
             bPrev.setEnabled(false);
             bPrev.setTextColor(Color.GRAY);
-        } else if (index == MAXIMUM_PAGE-1) {
+        } else if (index == MAXIMUM_PAGE - 1) {
             bNext.setEnabled(false);
             bNext.setTextColor(Color.GRAY);
         } else {
@@ -199,14 +217,13 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_categories) {
-            Intent intent = new Intent(getApplicationContext(),CategoryActivity.class);
+            Intent intent = new Intent(getApplicationContext(), CategoryActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.nav_top_headlines) {
+            // Do nothing
+        } else if (id == R.id.nav_search) {
+            // Open the Search Activity
+            Toast.makeText(getApplicationContext(), "Search Activity is Under Development", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -244,7 +261,7 @@ public class HomeActivity extends AppCompatActivity
         Log.i(TAG, "onLoadFinished: CALLED");
         loadingIndicator.setVisibility(View.GONE);
 
-        newsAdapter = new NewsAdapter(getSupportFragmentManager(),newsList);
+        newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
         viewPager.setAdapter(newsAdapter);
 
         setupPagerIndidcatorDots();

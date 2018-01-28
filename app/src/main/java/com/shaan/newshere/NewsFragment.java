@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,6 +35,7 @@ public class NewsFragment extends Fragment {
     private static final String TAG = "NewsFragment";
 
     TextView textView;
+    private Animation animReadMore;
 
     public NewsFragment() {
         // Required empty public constructor
@@ -85,12 +88,32 @@ public class NewsFragment extends Fragment {
             intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(url));
 
-            ((Button) view.findViewById(R.id.readMore)).setOnClickListener(new View.OnClickListener() {
+            final Button bReadMore = (Button) view.findViewById(R.id.readMore);
+            bReadMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startActivity(intent);
                 }
             });
+            animReadMore = AnimationUtils.loadAnimation(getActivity(), R.anim.anim_readmore);
+            bReadMore.startAnimation(animReadMore);
+            animReadMore.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    bReadMore.startAnimation(animReadMore);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+
             ((TextView) view.findViewById(R.id.title)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

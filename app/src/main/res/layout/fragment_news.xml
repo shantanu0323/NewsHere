@@ -37,25 +37,11 @@
         android:textSize="26sp"
         app:layout_constraintTop_toBottomOf="@+id/ivNewsCover" />
 
-    <!--<com.bluejamesbond.text.DocumentView-->
-    <!--android:id="@+id/description"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--app:documentView_insetPadding="10dp"-->
-    <!--app:documentView_text="@string/sample_text"-->
-    <!--app:documentView_textAlignment="justified"-->
-    <!--app:documentView_textColor="#fff"-->
-    <!--app:documentView_textFormat="plain"-->
-    <!--app:documentView_textSize="18sp"-->
-    <!--app:documentView_textSubPixel="true"-->
-    <!--app:documentView_textTypefacePath="fonts/roboto_light.ttf"-->
-    <!--app:layout_constraintTop_toBottomOf="@+id/title" />-->
-
     <TextView
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:fontFamily="fonts/roboto_light.ttf"
+        android:fontFamily="fonts/roboto_thin.ttf"
         android:maxLines="5"
         android:padding="10dp"
         android:scrollbars="vertical"
