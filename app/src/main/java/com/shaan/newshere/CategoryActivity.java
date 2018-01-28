@@ -47,9 +47,9 @@ public class CategoryActivity extends AppCompatActivity
 
     private static NewsAdapter newsAdapter;
 
-    String[] countryNames = {"India", "Australia", "Canada", "China", "France", "Germany", "Italy", "Japan"};
+    String[] countryNames = {"India", "Australia", "Canada", "China", "France", "Germany", "Italy", "Japan", "Worldwide"};
     int flags[] = {R.drawable.india_in, R.drawable.australia_au, R.drawable.canada_ca, R.drawable.china_cn, R.drawable.france_fr,
-            R.drawable.germany_de, R.drawable.italy_it, R.drawable.japan_jp};
+            R.drawable.germany_de, R.drawable.italy_it, R.drawable.japan_jp, R.drawable.worldwide};
 
     private Spinner spinner;
 
@@ -73,6 +73,7 @@ public class CategoryActivity extends AppCompatActivity
     private static final String SPINNER_POSITION = "spinner_position";
     private static final String LOADER_URL_KEY = "loader_url";
     private static final int MAXIMUM_PAGE = 20;
+    private boolean LOADER_INITIATED = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,11 +144,12 @@ public class CategoryActivity extends AppCompatActivity
             LoaderManager loaderManager = getSupportLoaderManager();
             int tabPos = getTabPosition();
             int spinnerPos = getSpinnerPosition();
-            NEWS_LOADER_ID = 8*tabPos + spinnerPos;
+            NEWS_LOADER_ID = 9 * tabPos + spinnerPos;
             Log.i(TAG, "initiateLoader: NEWS_LOADER_ID = " + NEWS_LOADER_ID);
             Bundle args = new Bundle();
             args.putInt(TAB_POSITION, tabPos);
             args.putInt(SPINNER_POSITION, spinnerPos);
+            LOADER_INITIATED = true;
             loaderManager.initLoader(NEWS_LOADER_ID, args, this);
         } else {
             loadingIndicator.setVisibility(View.GONE);
@@ -196,8 +198,13 @@ public class CategoryActivity extends AppCompatActivity
 
     @Override
     public Loader<List<News>> onCreateLoader(int id, Bundle args) {
-        String QUERY_URL = BASE_URL + "&country=" + countryCodes[args.getInt(SPINNER_POSITION)] +
-                "&category=" + categories[args.getInt(TAB_POSITION)].toLowerCase();
+        String QUERY_URL;
+        if (args.getInt(SPINNER_POSITION) == 8) {
+            QUERY_URL = BASE_URL + "&category=" + categories[args.getInt(TAB_POSITION)].toLowerCase();
+        } else {
+            QUERY_URL = BASE_URL + "&country=" + countryCodes[args.getInt(SPINNER_POSITION)] +
+                    "&category=" + categories[args.getInt(TAB_POSITION)].toLowerCase();
+        }
         Log.i(TAG, "onCreateLoader: URL SENT " + QUERY_URL);
         return new NewsLoader(this, QUERY_URL);
     }
@@ -207,6 +214,9 @@ public class CategoryActivity extends AppCompatActivity
         Log.i(TAG, "onLoadFinished: CALLED");
         loadingIndicator.setVisibility(View.GONE);
 
+        if (!LOADER_INITIATED) {
+            return;
+        }
         newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
         viewPager.setAdapter(newsAdapter);
 
@@ -273,8 +283,7 @@ public class CategoryActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_categories) {
-            Intent intent = new Intent(getApplicationContext(), CategoryActivity.class);
-            startActivity(intent);
+            // Do Nothing ...
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
