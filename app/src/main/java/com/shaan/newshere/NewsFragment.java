@@ -49,7 +49,7 @@ public class NewsFragment extends Fragment {
         if (description == null || description.trim().equals("null")) {
             description = "";
         }
-        ((DocumentView) view.findViewById(R.id.description)).setText(description);
+        ((TextView) view.findViewById(R.id.description)).setText(description);
 
         try {
             String dateStr = bundle.getString("publishedAt");
