@@ -29,7 +29,7 @@ public final class QueryUtils {
     }
 
     public static List<News> fetchNewsData(String requestUrl) {
-        Log.i(TAG, "fetchNewsData: CALLED");
+//        Log.i(TAG, "fetchNewsData: CALLED");
         // Create URL object
         URL url = createUrl(requestUrl);
 
@@ -50,7 +50,7 @@ public final class QueryUtils {
     }
 
     private static URL createUrl(String stringUrl) {
-        Log.i(TAG, "createUrl: CALLED");
+//        Log.i(TAG, "createUrl: CALLED");
         URL url = null;
         try {
             url = new URL(stringUrl);
@@ -61,7 +61,7 @@ public final class QueryUtils {
     }
 
     private static String makeHttpRequest(URL url) throws IOException {
-        Log.i(TAG, "makeHttpRequest: CALLED");
+//        Log.i(TAG, "makeHttpRequest: CALLED");
         String jsonResponse = "";
 
         // If the URL is null, then return early.
@@ -73,7 +73,7 @@ public final class QueryUtils {
         InputStream inputStream = null;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(10000 /* milliseconds */);
+            urlConnection.setReadTimeout(15000 /* milliseconds */);
             urlConnection.setConnectTimeout(15000 /* milliseconds */);
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
@@ -117,7 +117,7 @@ public final class QueryUtils {
     }
 
     private static List<News> extractFeatureFromJson(String newsJSON) {
-        Log.i(TAG, "extractFeatureFromJson: CALLED");
+//        Log.i(TAG, "extractFeatureFromJson: CALLED");
         // If the JSON string is empty or null, then return early.
         if (TextUtils.isEmpty(newsJSON)) {
             return null;

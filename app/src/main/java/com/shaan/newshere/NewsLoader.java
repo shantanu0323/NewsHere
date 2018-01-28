@@ -19,18 +19,18 @@ class NewsLoader extends AsyncTaskLoader<List<News>> {
     public NewsLoader(Context context, String topHeadlinesUrl) {
         super(context);
         queryUrl = topHeadlinesUrl;
-        Log.i(TAG, "NewsLoader: URL = " + queryUrl);
+//        Log.i(TAG, "NewsLoader: URL = " + queryUrl);
     }
 
     @Override
     protected void onStartLoading() {
-        Log.i(TAG, "onStartLoading: forceLoad : CALLED");
+//        Log.i(TAG, "onStartLoading: forceLoad : CALLED");
         forceLoad();
     }
 
     @Override
     public List<News> loadInBackground() {
-        Log.i(TAG, "loadInBackground: CALLED");
+//        Log.i(TAG, "loadInBackground: CALLED");
         if (queryUrl == null) {
             return null;
         }

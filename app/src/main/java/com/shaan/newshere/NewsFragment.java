@@ -2,10 +2,12 @@ package com.shaan.newshere;
 
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Layout;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +51,15 @@ public class NewsFragment extends Fragment {
         if (description == null || description.trim().equals("null")) {
             description = "";
         }
-        ((TextView) view.findViewById(R.id.description)).setText(description);
+
+        TextView tvDescription = (TextView) view.findViewById(R.id.description);
+        tvDescription.setMovementMethod(new ScrollingMovementMethod());
+        try {
+            tvDescription.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/roboto_light.ttf"));
+        } catch (Exception e) {
+            Log.e(TAG, "onCreateView: TYPEFACE : " + e.getMessage(), e);
+        }
+        tvDescription.setText(description);
 
         try {
             String dateStr = bundle.getString("publishedAt");
@@ -69,25 +79,30 @@ public class NewsFragment extends Fragment {
             author = "";
         ((TextView) view.findViewById(R.id.author)).setText(author);
 
-        String url = bundle.getString("url");
-        final Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(url));
+        final Intent intent;
+        try {
+            String url = bundle.getString("url");
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
 
-        ((Button) view.findViewById(R.id.readMore)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(intent);
-            }
-        });
+            ((Button) view.findViewById(R.id.readMore)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(intent);
+                }
+            });
+            ((TextView) view.findViewById(R.id.title)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(intent);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "onCreateView: " + e.getMessage(), e);
+        }
 
-        ((TextView) view.findViewById(R.id.title)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(intent);
-            }
-        });
         String urlToImage = bundle.getString("urlToImage");
-        Log.i(TAG, "onCreateView: URL-TO-IMAGE : " + urlToImage);
         if (urlToImage != null) {
             if (!urlToImage.trim().equals("")) {
                 Picasso.with(getActivity().getApplicationContext())

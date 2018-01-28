@@ -37,43 +37,49 @@
         android:textSize="26sp"
         app:layout_constraintTop_toBottomOf="@+id/ivNewsCover" />
 
-    <!--<com.shaan.newshere.PressableDocumentView-->
-        <!--android:id="@+id/description"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--app:documentView_insetPadding="10dp"-->
-        <!--app:documentView_text="@string/sample_text"-->
-        <!--app:documentView_textAlignment="justified"-->
-        <!--app:documentView_textColor="#fff"-->
-        <!--app:documentView_textFormat="plain"-->
-        <!--app:documentView_textSize="18sp"-->
-        <!--app:documentView_textSubPixel="true"-->
-        <!--app:documentView_textTypefacePath="fonts/roboto_light.ttf"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/title" />-->
+    <!--<com.bluejamesbond.text.DocumentView-->
+    <!--android:id="@+id/description"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--app:documentView_insetPadding="10dp"-->
+    <!--app:documentView_text="@string/sample_text"-->
+    <!--app:documentView_textAlignment="justified"-->
+    <!--app:documentView_textColor="#fff"-->
+    <!--app:documentView_textFormat="plain"-->
+    <!--app:documentView_textSize="18sp"-->
+    <!--app:documentView_textSubPixel="true"-->
+    <!--app:documentView_textTypefacePath="fonts/roboto_light.ttf"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/title" />-->
 
     <TextView
         android:id="@+id/description"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:fontFamily="fonts/roboto_light.ttf"
+        android:maxLines="5"
         android:padding="10dp"
+        android:scrollbars="vertical"
         android:text="@string/sample_text"
         android:textColor="#fff"
         android:textSize="18sp"
-        android:fontFamily="fonts/roboto_light.ttf"
+        app:layout_constraintBottom_toTopOf="@id/readMore"
         app:layout_constraintTop_toBottomOf="@+id/title" />
 
     <TextView
         android:id="@+id/author"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5sp"
+        android:layout_marginStart="8dp"
         android:fontFamily="@font/roboto_light"
+        android:gravity="right"
         android:padding="10sp"
         android:text="- Author's Name"
         android:textColor="@color/colorAccent2"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/readMore" />
 
     <Button
         android:id="@+id/readMore"

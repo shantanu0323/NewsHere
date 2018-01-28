@@ -101,6 +101,8 @@
         </android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>
 
+    <include layout="@layout/content_category" />
+
     <ProgressBar
         android:id="@+id/loading_indicator"
         style="@style/Widget.AppCompat.ProgressBar"
@@ -108,11 +110,4 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_gravity="center" />
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
 </android.support.design.widget.CoordinatorLayout>

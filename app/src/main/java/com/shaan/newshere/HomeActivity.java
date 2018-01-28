@@ -169,7 +169,7 @@ public class HomeActivity extends AppCompatActivity
             params.setMargins(5, 0, 5, 0);
             ivArrayDotsPager[i].setLayoutParams(params);
             ivArrayDotsPager[i].setImageResource(R.drawable.unselected_dot);
-            //ivArrayDotsPager[i].setAlpha(0.4f);
+            ivArrayDotsPager[i].setRotation(13);
             ivArrayDotsPager[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -271,7 +271,6 @@ public class HomeActivity extends AppCompatActivity
             }
         });
         viewPager.setPageTransformer(false, new FlipPageViewTransformer());
-//        viewPager.setRotation(90);
 
 
         bPrev.setOnClickListener(new View.OnClickListener() {
