@@ -223,7 +223,8 @@ public class HomeActivity extends AppCompatActivity
             // Do nothing
         } else if (id == R.id.nav_search) {
             // Open the Search Activity
-            Toast.makeText(getApplicationContext(), "Search Activity is Under Development", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
