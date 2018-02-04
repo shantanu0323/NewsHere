@@ -8,6 +8,159 @@
     tools:context="com.shaan.newshere.SearchActivity"
     tools:showIn="@layout/app_bar_search">
 
+    <FrameLayout
+        android:id="@+id/sortContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="0dp"
+        android:background="#ea171d21"
+        android:elevation="10dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <RadioGroup
+                android:id="@+id/sortRadioContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <RadioButton
+                    android:id="@+id/rbRelevancy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorAccent2"
+                    android:fontFamily="@font/roboto_light"
+                    android:paddingLeft="10dp"
+                    android:text="Relevancy"
+                    android:textColor="#fff" />
+
+                <RadioButton
+                    android:id="@+id/rbPopularity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorAccent2"
+                    android:fontFamily="@font/roboto_light"
+                    android:paddingLeft="10dp"
+                    android:text="Popularity"
+                    android:textColor="#fff" />
+
+                <RadioButton
+                    android:id="@+id/rbPublishedAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorAccent2"
+                    android:fontFamily="@font/roboto_light"
+                    android:paddingLeft="10dp"
+                    android:text="Published At"
+                    android:textColor="#fff" />
+
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/bSortDone"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/bg_search_action"
+                    android:src="@drawable/ic_done" />
+
+                <ImageButton
+                    android:id="@+id/bSortCancel"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/bg_search_action"
+                    android:src="@drawable/ic_cancel" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/searchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="0dp"
+        android:background="#ea171d21"
+        android:elevation="10dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/etQuery"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:textColorHint="#ccc">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_search"
+                    android:fontFamily="@font/roboto_light"
+                    android:hint="Search query ..."
+                    android:padding="10dp"
+                    android:shadowColor="@color/colorAccent2"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="2"
+                    android:textColor="#fff"
+                    android:textColorHint="#ccc" />
+
+
+            </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/bSearchDone"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/bg_search_action"
+                    android:src="@drawable/ic_done" />
+
+                <ImageButton
+                    android:id="@+id/bSearchCancel"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/bg_search_action"
+                    android:src="@drawable/ic_cancel" />
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -42,6 +195,7 @@
             android:src="@mipmap/ic_next_page" />
 
         <LinearLayout
+            android:id="@+id/bSort"
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:background="@drawable/bg_action_ripple"
@@ -51,7 +205,6 @@
             android:padding="10dp">
 
             <ImageButton
-                android:id="@+id/bSort"
                 android:layout_width="36dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
@@ -64,12 +217,12 @@
                 android:src="@mipmap/ic_sort" />
 
             <TextView
-                android:id="@+id/tv_sort"
+                android:id="@+id/tvSort"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
                 android:fontFamily="@font/roboto_light"
                 android:gravity="center"
-                android:text="Relevance"
+                android:text="Relevancy"
                 android:textColor="@color/colorAccent"
                 android:textSize="8dp" />
         </LinearLayout>
