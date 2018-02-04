@@ -8,4 +8,131 @@
     tools:context="com.shaan.newshere.SearchActivity"
     tools:showIn="@layout/app_bar_search">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/bPrevPage"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_action_ripple"
+            android:padding="15dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_prev_page" />
+
+        <TextView
+            android:id="@+id/tvPages"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_light"
+            android:gravity="center"
+            android:text="Page 1-20 of 43567"
+            android:textColor="#fff" />
+
+        <ImageButton
+            android:id="@+id/bNextPage"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_action_ripple"
+            android:padding="15dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_next_page" />
+
+        <LinearLayout
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_action_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <ImageButton
+                android:id="@+id/bSort"
+                android:layout_width="36dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:background="@null"
+                android:clickable="false"
+                android:paddingLeft="6dp"
+                android:paddingRight="4dp"
+                android:scaleType="fitXY"
+                android:src="@mipmap/ic_sort" />
+
+            <TextView
+                android:id="@+id/tv_sort"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:fontFamily="@font/roboto_light"
+                android:gravity="center"
+                android:text="Relevance"
+                android:textColor="@color/colorAccent"
+                android:textSize="8dp" />
+        </LinearLayout>
+
+
+        <ImageButton
+            android:id="@+id/bFilter"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_action_ripple"
+            android:padding="10dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_calendar" />
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bPrev"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/pager_dots"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:elevation="4dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/bPrev"
+        app:layout_constraintRight_toLeftOf="@+id/bNext"
+        app:layout_constraintTop_toTopOf="@+id/bPrev"></LinearLayout>
+
+    <Button
+        android:id="@+id/bPrev"
+        android:layout_width="80dp"
+        android:layout_height="35dp"
+        android:background="@drawable/prev_bg"
+        android:fontFamily="@font/roboto_light"
+        android:text="Prev"
+        android:textAllCaps="false"
+        android:textColor="@color/colorAccent"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <Button
+        android:id="@+id/bNext"
+        android:layout_width="80dp"
+        android:layout_height="35dp"
+        android:background="@drawable/next_bg"
+        android:fontFamily="@font/roboto_light"
+        android:text="Next"
+        android:textAllCaps="false"
+        android:textColor="@color/colorAccent"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+
 </android.support.constraint.ConstraintLayout>
