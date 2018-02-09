@@ -3,13 +3,16 @@ package com.shaan.newshere;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.text.Spannable;
@@ -26,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -82,6 +86,9 @@ public class SearchActivity extends AppCompatActivity
     private String sortPreference = "relevancy";
     private Calendar minCal = null;
     private NewsAdapter newsAdapter;
+    private LinearLayout llAction;
+    private ImageButton bPrevPage, bNextPage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +127,10 @@ public class SearchActivity extends AppCompatActivity
         bSearchDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
                 String query = etQuery.getEditText().getText().toString().trim().toLowerCase();
                 if (query.length() > 0) {
 //                    if (isAlpha(queryText)) {
@@ -142,6 +153,10 @@ public class SearchActivity extends AppCompatActivity
         bSearchCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
                 searchContainer.setVisibility(View.GONE);
             }
         });
@@ -204,6 +219,44 @@ public class SearchActivity extends AppCompatActivity
                 dFragment.show(getFragmentManager(), "Date Picker");
             }
         });
+
+        if (currentPageNo == 1) {
+            bPrevPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                    (getApplicationContext(), R.color.imageTintColor)));
+            bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+            bPrevPage.setEnabled(false);
+        } else {
+            bPrevPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                    (getApplicationContext(), android.R.color.white)));
+            bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+            bPrevPage.setEnabled(true);
+        }
+
+        bPrevPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentPageNo > 1) {
+                    currentPageNo--;
+                    bNextPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                            (getApplicationContext(), android.R.color.white)));
+                    bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+                    initiateLoader();
+                    bNextPage.setEnabled(true);
+                }
+                if (currentPageNo == 1) {
+                    bPrevPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                            (getApplicationContext(), R.color.imageTintColor)));
+                    bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+                    bPrevPage.setEnabled(false);
+                } else {
+                    bPrevPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                            (getApplicationContext(), android.R.color.white)));
+                    bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+                    bPrevPage.setEnabled(true);
+                }
+            }
+        });
+
     }
 
     private void initiateLoader() {
@@ -298,6 +351,39 @@ public class SearchActivity extends AppCompatActivity
         });
         bNext.setVisibility(View.VISIBLE);
 
+        int totalResults = newsList.get(0).getTotalResults();
+
+        final int maxPage = totalResults / MAXIMUM_PAGE + 1;
+        String pageText = "Page " + currentPageNo + " of " + maxPage;
+        tvPages.setText(pageText);
+        llAction.setVisibility(View.VISIBLE);
+
+
+        bNextPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentPageNo < maxPage) {
+                    currentPageNo++;
+                    bPrevPage.setEnabled(true);
+                    bPrevPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                            (getApplicationContext(), android.R.color.white)));
+                    bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+                    initiateLoader();
+                }
+                if (currentPageNo == maxPage) {
+                    bNextPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                            (getApplicationContext(), R.color.imageTintColor)));
+                    bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+                    bNextPage.setEnabled(false);
+                } else {
+                    bNextPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                            (getApplicationContext(), android.R.color.white)));
+                    bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+                    bNextPage.setEnabled(true);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -381,7 +467,7 @@ public class SearchActivity extends AppCompatActivity
     private void findViews() {
         tvTitle = (TextView) findViewById(R.id.tvTitle);
         searchContainer = (FrameLayout) findViewById(R.id.searchContainer);
-        searchContainer.setVisibility(View.GONE);
+        searchContainer.setVisibility(View.VISIBLE);
         bSearchDone = (ImageButton) findViewById(R.id.bSearchDone);
         bSearchCancel = (ImageButton) findViewById(R.id.bSearchCancel);
         etQuery = (TextInputLayout) findViewById(R.id.etQuery);
@@ -408,6 +494,10 @@ public class SearchActivity extends AppCompatActivity
         llPagerDots = (LinearLayout) findViewById(R.id.pager_dots);
         bPrev = (Button) findViewById(R.id.bPrev);
         bNext = (Button) findViewById(R.id.bNext);
+        llAction = (LinearLayout) findViewById(R.id.ll_action);
+        llAction.setVisibility(View.GONE);
+        bPrevPage = (ImageButton) findViewById(R.id.bPrevPage);
+        bNextPage = (ImageButton) findViewById(R.id.bNextPage);
     }
 
     @Override
@@ -478,7 +568,6 @@ public class SearchActivity extends AppCompatActivity
             try {
                 Date date = new SimpleDateFormat("yyyy-MM-d").parse(fromDate);
                 dateRange = formatter.format(date);
-                Toast.makeText(getApplicationContext(), fromDate, Toast.LENGTH_SHORT).show();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -497,7 +586,6 @@ public class SearchActivity extends AppCompatActivity
             try {
                 Date date = new SimpleDateFormat("yyyy-MM-d").parse(toDate);
                 dateRange += "  -  " + formatter.format(date);
-                Toast.makeText(getApplicationContext(), toDate, Toast.LENGTH_SHORT).show();
             } catch (ParseException e) {
                 e.printStackTrace();
             }

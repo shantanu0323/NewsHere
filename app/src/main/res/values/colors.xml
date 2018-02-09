@@ -5,4 +5,5 @@
     <color name="colorAccent">#fbfb01</color>
     <color name="colorBackground">#1f272d</color>
     <color name="colorAccent2">#d47bef</color>
+    <color name="imageTintColor">#333</color>
 </resources>

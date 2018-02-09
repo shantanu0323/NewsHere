@@ -38,6 +38,7 @@ public class NewsAdapter extends FragmentStatePagerAdapter {
             bundle.putString("url", newsList.get(position).getUrl());
             bundle.putString("urlToImage", newsList.get(position).getUrlToImage());
             bundle.putString("publishedAt", newsList.get(position).getPublishedAt());
+            bundle.putInt("totalResults", newsList.get(position).getTotalResults());
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "getItem: " + e.getMessage(), e);

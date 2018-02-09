@@ -179,7 +179,8 @@
             android:background="@drawable/bg_action_ripple"
             android:padding="15dp"
             android:scaleType="fitXY"
-            android:src="@mipmap/ic_prev_page" />
+            android:src="@mipmap/ic_prev_page"
+            android:tintMode="multiply"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -218,6 +219,7 @@
             android:background="@drawable/bg_action_ripple"
             android:padding="15dp"
             android:scaleType="fitXY"
+            android:tintMode="multiply"
             android:src="@mipmap/ic_next_page" />
 
         <LinearLayout

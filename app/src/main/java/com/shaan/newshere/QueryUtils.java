@@ -133,7 +133,7 @@ public final class QueryUtils {
 
             // Create a JSONObject from the JSON response string
             JSONObject baseJsonResponse = new JSONObject(newsJSON);
-
+            int totalResults = baseJsonResponse.getInt("totalResults");
             // Extract the JSONArray associated with the key CALLED "features",
             // which represents a list of features (or news).
             JSONArray articles = baseJsonResponse.getJSONArray("articles");
@@ -151,7 +151,7 @@ public final class QueryUtils {
                 newsData.setUrl(currentNews.getString("url"));
                 newsData.setUrlToImage(currentNews.getString("urlToImage"));
                 newsData.setPublishedAt(currentNews.getString("publishedAt"));
-
+                newsData.setTotalResults(totalResults);
                 newsList.add(newsData);
             }
 
