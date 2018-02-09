@@ -12,6 +12,27 @@
         <item name="android:textAppearance">@style/my_tab_text</item>
     </style>
 
+    <style name="CustomDatePickerDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent2</item>
+        <item name="android:datePickerStyle">@style/CustomDatePickerStyle</item>
+        <item name="android:colorAccent">@color/colorAccent2</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+    </style>
+
+    <style name="CustomDatePickerStyle" parent="@android:style/Widget.Material.DatePicker">
+        <item name="android:headerBackground">@color/colorAccent2</item>
+        <item name="android:calendarTextColor">#fff</item>
+        <item name="android:textAppearance">@style/CustomTextStyle</item>
+        <item name="android:dayOfWeekBackground">#fff</item>
+        <item name="android:yearListSelectorColor">#0f9</item>
+        <item name="android:datePickerMode">calendar</item>
+        <item name="android:fontFamily">@font/roboto_light</item>
+    </style>
+
+    <style name="CustomTextStyle" parent="@android:style/TextAppearance.Theme.Dialog">
+        <item name="android:fontFamily">@font/roboto_light</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

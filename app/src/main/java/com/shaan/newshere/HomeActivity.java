@@ -225,6 +225,7 @@ public class HomeActivity extends AppCompatActivity
             // Open the Search Activity
             Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

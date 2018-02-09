@@ -1,8 +1,15 @@
 package com.shaan.newshere;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -13,16 +20,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class SearchActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, DatePickerFragment.OnDatePickedListener {
 
+    private static final String TAG = "SearchActivity";
+    private static Typeface ROBOTO_THIN = null;
+    private static Typeface ROBOTO_LIGHT = null;
     private FrameLayout searchContainer, sortContainer;
     private ImageButton bSearchDone, bSearchCancel, bSortDone, bSortCancel;
     private TextView tvTitle;
@@ -31,8 +50,14 @@ public class SearchActivity extends AppCompatActivity
     private RadioGroup sortRadioContainer;
     private RadioButton rbRelevancy, rbPopularity, rbPublishedAt;
     private TextView tvSort;
+    private ImageButton bFilterDate;
+    public String fromDate;
+    public String toDate;
+    private boolean dateFetched = false;
+    private TextView tvPages, tvDateRange;
 
     int cnt = 0;
+    private String dateRange = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +66,9 @@ public class SearchActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
+
+        findViews();
+        initFonts();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -51,22 +79,33 @@ public class SearchActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
+        Menu m = navigationView.getMenu();
 
-        findViews();
+        for (int i = 0; i < m.size(); i++) {
+
+            MenuItem mi = m.getItem(i);
+
+            SpannableString s = new SpannableString(mi.getTitle());
+            s.setSpan(new CustomTypefaceSpan("", ROBOTO_LIGHT), 0, s.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            mi.setTitle(s);
+        }
+
+        setInitialDates();
 
         bSearchDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String query = etQuery.getEditText().getText().toString().trim().toLowerCase();
                 if (query.length() > 0) {
-                    if (isAlpha(query)) {
-                        etQuery.setErrorEnabled(false);
-                        tvTitle.setText(query);
-                        searchContainer.setVisibility(View.GONE);
-                    } else {
-                        etQuery.setErrorEnabled(true);
-                        etQuery.setError("Please enter a valid query");
-                    }
+//                    if (isAlpha(query)) {
+                    etQuery.setErrorEnabled(false);
+                    tvTitle.setText(query);
+                    searchContainer.setVisibility(View.GONE);
+//                    } else {
+//                        etQuery.setErrorEnabled(true);
+//                        etQuery.setError("Please enter a valid query");
+//                    }
                 } else {
                     etQuery.setErrorEnabled(true);
                     etQuery.setError("Query cannot be empty");
@@ -115,6 +154,40 @@ public class SearchActivity extends AppCompatActivity
 
         searchContainer.setClickable(true);
         sortContainer.setClickable(true);
+
+        bFilterDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment dFragment = new DatePickerFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("title", "From");
+                dFragment.setArguments(bundle);
+                dFragment.setCancelable(false);
+                dFragment.show(getFragmentManager(), "Date Picker");
+            }
+        });
+    }
+
+    private void setInitialDates() {
+        Calendar currentCalendar = Calendar.getInstance();
+        int year = currentCalendar.get(Calendar.YEAR);
+        int month = currentCalendar.get(Calendar.MONTH);
+        int day = currentCalendar.get(Calendar.DAY_OF_MONTH);
+        fromDate = "" + year + "-" + (month + 1) + "-" + day;
+        try {
+            Date currentDate = new SimpleDateFormat("yyyy-MM-d").parse(fromDate);
+            SimpleDateFormat displayFormatter = new SimpleDateFormat("d MMM yyyy");
+            dateRange = displayFormatter.format(currentDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        long weekBeforeMillis = currentCalendar.getTimeInMillis() - 1000 * 60 * 60 * 24 * 7;
+        Date weekBeforeDate = new Date(weekBeforeMillis);
+        SimpleDateFormat displayFormatter = new SimpleDateFormat("d MMM yyyy");
+        dateRange = displayFormatter.format(weekBeforeDate) + "  -  " + dateRange;
+        tvDateRange.setText(dateRange);
+        tvDateRange.setVisibility(View.VISIBLE);
     }
 
     private void findViews() {
@@ -135,6 +208,12 @@ public class SearchActivity extends AppCompatActivity
         rbRelevancy = (RadioButton) findViewById(R.id.rbRelevancy);
         rbPopularity = (RadioButton) findViewById(R.id.rbPopularity);
         rbPublishedAt = (RadioButton) findViewById(R.id.rbPublishedAt);
+
+        bFilterDate = (ImageButton) findViewById(R.id.bFilterDate);
+
+        tvPages = (TextView) findViewById(R.id.tvPages);
+        tvDateRange = (TextView) findViewById(R.id.tvDateRange);
+        tvDateRange.setVisibility(View.GONE);
     }
 
     @Override
@@ -193,7 +272,48 @@ public class SearchActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public boolean isAlpha(String name) {
-        return name.matches("[a-z]+");
+//    public boolean isAlpha(String name) {
+//        return name.matches("[a-z]+");
+//    }
+
+    @Override
+    public void onDatePicked(int year, int month, int day) {
+        SimpleDateFormat formatter = new SimpleDateFormat("d MMM yyyy");
+        if (!dateFetched) {
+            fromDate = year + "-" + (month + 1) + "-" + day;
+            try {
+                Date date = new SimpleDateFormat("yyyy-MM-d").parse(fromDate);
+                dateRange = formatter.format(date);
+                Toast.makeText(getApplicationContext(), fromDate, Toast.LENGTH_SHORT).show();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            dateFetched = true;
+            DialogFragment dFragment = new DatePickerFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("title", "To");
+            dFragment.setArguments(bundle);
+            dFragment.setCancelable(false);
+            dFragment.show(getFragmentManager(), "Date Picker");
+        } else {
+            toDate = "" + year + "-" + (month + 1) + "-" + day;
+            try {
+                Date date = new SimpleDateFormat("yyyy-MM-d").parse(toDate);
+                dateRange += "  -  " + formatter.format(date);
+                Toast.makeText(getApplicationContext(), toDate, Toast.LENGTH_SHORT).show();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            tvDateRange.setText(dateRange);
+            dateRange = "";
+            dateFetched = false;
+        }
+
     }
+
+    private void initFonts() {
+        ROBOTO_LIGHT = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_light.ttf");
+        ROBOTO_THIN = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_thin.ttf");
+    }
+
 }

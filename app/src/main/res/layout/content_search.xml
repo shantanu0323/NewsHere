@@ -8,13 +8,16 @@
     tools:context="com.shaan.newshere.SearchActivity"
     tools:showIn="@layout/app_bar_search">
 
+
     <FrameLayout
         android:id="@+id/sortContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="0dp"
         android:background="#ea171d21"
+        android:clickable="true"
         android:elevation="10dp"
+        android:focusable="true"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,7 +102,9 @@
         android:layout_height="match_parent"
         android:layout_margin="0dp"
         android:background="#ea171d21"
+        android:clickable="true"
         android:elevation="10dp"
+        android:focusable="true"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -175,15 +180,35 @@
             android:scaleType="fitXY"
             android:src="@mipmap/ic_prev_page" />
 
-        <TextView
-            android:id="@+id/tvPages"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="56dp"
             android:layout_weight="1"
-            android:fontFamily="@font/roboto_light"
-            android:gravity="center"
-            android:text="Page 1-20 of 43567"
-            android:textColor="#fff" />
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/tvPages"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="@font/roboto_light"
+                android:gravity="center_horizontal|bottom"
+                android:paddingBottom="5dp"
+                android:text="Page 1-20 of 43567"
+                android:textColor="#fff" />
+
+            <TextView
+                android:id="@+id/tvDateRange"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.5"
+                android:fontFamily="@font/roboto_light"
+                android:gravity="center_horizontal"
+                android:textSize="11sp"
+                android:text="3rd Nov 2018  -  9th Feb 2018"
+                android:textColor="#ddd" />
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/bNextPage"
@@ -229,7 +254,7 @@
 
 
         <ImageButton
-            android:id="@+id/bFilter"
+            android:id="@+id/bFilterDate"
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:background="@drawable/bg_action_ripple"
