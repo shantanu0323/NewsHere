@@ -27,7 +27,8 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         int day = currentDate.get(Calendar.DAY_OF_MONTH);
 
         Calendar minDate = Calendar.getInstance();
-        minDate.set(2017, 10, 3);
+        minDate.set(getArguments().getInt("minYear"), getArguments().getInt("minMonth"),
+                getArguments().getInt("minDay"));
         DatePickerDialog dpd = new DatePickerDialog(getActivity(),
                 R.style.CustomDatePickerDialogTheme, this, year, month, day);
         dpd.getDatePicker().setMinDate(minDate.getTimeInMillis());
