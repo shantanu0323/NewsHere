@@ -1,7 +1,6 @@
 package com.shaan.newshere;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.LoaderManager;
@@ -36,8 +35,14 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+
+import java.util.Calendar;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity
@@ -75,6 +80,22 @@ public class HomeActivity extends AppCompatActivity
     private ImageButton bRefresh;
     private int LAST_LOADER_ID;
     private boolean forceLoad = false;
+
+    private AdView adView;
+    // Testing purposes
+    private final String BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
+    // Original
+//    private final String BANNER_AD_UNIT_ID = "ca-app-pub-2383503724460446/8403933355";
+
+    private InterstitialAd interstitialAd;
+    private boolean showAd = false;
+    private final String TEST_DEVICE_ID = "1F5E03F3D435ACF9A110CAEC4896FCEB";
+    // Testing purposes
+    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
+    // Original
+    //    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-2383503724460446/8618721628";
+    private Calendar calendar;
+    private long currentTime, lastMinTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +170,21 @@ public class HomeActivity extends AppCompatActivity
                 initiateLoader();
             }
         });
+
+        MobileAds.initialize(this, BANNER_AD_UNIT_ID);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+        adView.loadAd(adRequest);
+
+        interstitialAd = new InterstitialAd(this);
+        interstitialAd.setAdUnitId(INTERSTITAL_AD_UNIT_ID);
+        interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
+        interstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
+            }
+        });
     }
 
     private void initiateLoader() {
@@ -198,6 +234,13 @@ public class HomeActivity extends AppCompatActivity
             bNext.setEnabled(true);
             bNext.setTextColor(getResources().getColor(R.color.colorAccent));
         }
+
+        calendar = Calendar.getInstance();
+        currentTime = calendar.getTimeInMillis();
+        if (interstitialAd.isLoaded() && (index % 7 == 0) && index != 0 && (currentTime - lastMinTime > 1000 * 30)) {
+            interstitialAd.show();
+            lastMinTime = currentTime;
+        }
         return index;
     }
 
@@ -234,7 +277,7 @@ public class HomeActivity extends AppCompatActivity
             tvTitle.setTypeface(ROBOTO_LIGHT);
             tvTitle.setTextColor(Color.WHITE);
             tvTitle.setTextSize(20f);
-            tvTitle.setPadding(50,20,20,20);
+            tvTitle.setPadding(50, 20, 20, 20);
             AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
             builder.setCustomTitle(tvTitle)
                     .setCancelable(false)
@@ -263,6 +306,7 @@ public class HomeActivity extends AppCompatActivity
         if (id == R.id.nav_categories) {
             Intent intent = new Intent(getApplicationContext(), CategoryActivity.class);
             startActivity(intent);
+
         } else if (id == R.id.nav_top_headlines) {
             // Do nothing
         } else if (id == R.id.nav_search) {
@@ -290,6 +334,7 @@ public class HomeActivity extends AppCompatActivity
         loadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator);
         errorContainer = (ConstraintLayout) findViewById(R.id.errorContainer);
         bRefresh = (ImageButton) findViewById(R.id.bRefresh);
+        adView = (AdView) findViewById(R.id.adView);
     }
 
     private void initFonts() {
@@ -377,5 +422,14 @@ public class HomeActivity extends AppCompatActivity
         savedInstanceIndex = viewPager.getCurrentItem();
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        calendar = Calendar.getInstance();
+        currentTime = calendar.getTimeInMillis();
+        if (interstitialAd.isLoaded() && (currentTime - lastMinTime > 1000 * 30)) {
+            interstitialAd.show();
+            lastMinTime = currentTime;
+        }
+    }
 }

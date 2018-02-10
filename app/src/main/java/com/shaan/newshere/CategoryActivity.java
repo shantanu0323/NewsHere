@@ -41,6 +41,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+
+import java.util.Calendar;
 import java.util.List;
 
 public class CategoryActivity extends AppCompatActivity
@@ -82,6 +89,21 @@ public class CategoryActivity extends AppCompatActivity
     private int LAST_LOADER_ID;
     private boolean forceLoad = false;
 
+    private AdView adView;
+    // Testing purposes
+    private final String BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
+    // Original
+//    private final String BANNER_AD_UNIT_ID = "ca-app-pub-2383503724460446/8403933355";
+
+    private InterstitialAd interstitialAd;
+    private boolean showAd = false;
+    private final String TEST_DEVICE_ID = "1F5E03F3D435ACF9A110CAEC4896FCEB";
+    // Testing purposes
+    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
+    // Original
+    //    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-2383503724460446/8618721628";
+    private Calendar calendar;
+    private long currentTime, lastMinTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +177,22 @@ public class CategoryActivity extends AppCompatActivity
                 initiateLoader();
             }
         });
+
+        MobileAds.initialize(this, BANNER_AD_UNIT_ID);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+        adView.loadAd(adRequest);
+
+
+        interstitialAd = new InterstitialAd(this);
+        interstitialAd.setAdUnitId(INTERSTITAL_AD_UNIT_ID);
+        interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
+        interstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
+            }
+        });
     }
 
     private void initiateLoader() {
@@ -188,7 +226,7 @@ public class CategoryActivity extends AppCompatActivity
             loaderManager.initLoader(NEWS_LOADER_ID, args, this);
         } else {
             loadingIndicator.setVisibility(View.GONE);
-            ((TextView)errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with you internet connectivity");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with you internet connectivity");
             errorContainer.setVisibility(View.VISIBLE);
         }
     }
@@ -206,6 +244,12 @@ public class CategoryActivity extends AppCompatActivity
             bPrev.setTextColor(getResources().getColor(R.color.colorAccent));
             bNext.setEnabled(true);
             bNext.setTextColor(getResources().getColor(R.color.colorAccent));
+        }
+        calendar = Calendar.getInstance();
+        currentTime = calendar.getTimeInMillis();
+        if (interstitialAd.isLoaded() && (index % 7 == 0) && index != 0 && (currentTime - lastMinTime > 1000 * 30)) {
+            interstitialAd.show();
+            lastMinTime = currentTime;
         }
         return index;
     }
@@ -255,7 +299,7 @@ public class CategoryActivity extends AppCompatActivity
         }
 
         if (newsList == null) {
-            ((TextView)errorContainer.findViewById(R.id.tvErrorDesc)).setText("Couldn't reach servers at the moment");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("Couldn't reach servers at the moment");
             errorContainer.setVisibility(View.VISIBLE);
         } else {
             errorContainer.setVisibility(View.GONE);
@@ -358,7 +402,9 @@ public class CategoryActivity extends AppCompatActivity
         bPrev = (Button) findViewById(R.id.bPrev);
         bNext = (Button) findViewById(R.id.bNext);
         errorContainer = (ConstraintLayout) findViewById(R.id.errorContainer);
-        bRefresh = (ImageButton) findViewById(R.id.bRefresh);  }
+        bRefresh = (ImageButton) findViewById(R.id.bRefresh);
+        adView = (AdView) findViewById(R.id.adView);
+    }
 
     private void initFonts() {
         ROBOTO_LIGHT = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_light.ttf");
@@ -376,7 +422,7 @@ public class CategoryActivity extends AppCompatActivity
             tvTitle.setTypeface(ROBOTO_LIGHT);
             tvTitle.setTextColor(Color.WHITE);
             tvTitle.setTextSize(20f);
-            tvTitle.setPadding(50,20,20,20);
+            tvTitle.setPadding(50, 20, 20, 20);
             AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
             builder.setCustomTitle(tvTitle)
                     .setCancelable(false)
@@ -401,5 +447,16 @@ public class CategoryActivity extends AppCompatActivity
         super.onPause();
         Log.e(TAG, "onPause: ");
         savedInstanceIndex = viewPager.getCurrentItem();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        calendar = Calendar.getInstance();
+        currentTime = calendar.getTimeInMillis();
+        if (interstitialAd.isLoaded() && (currentTime - lastMinTime > 1000 * 30)) {
+            interstitialAd.show();
+            lastMinTime = currentTime;
+        }
     }
 }

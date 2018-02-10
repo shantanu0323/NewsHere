@@ -1,9 +1,7 @@
 package com.shaan.newshere;
 
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -21,7 +19,6 @@ import android.support.v4.view.ViewPager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -44,6 +41,12 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -98,6 +101,22 @@ public class SearchActivity extends AppCompatActivity
     private ImageButton bRefresh;
     private int LAST_LOADER_ID;
     private boolean forceLoad = false;
+
+    private AdView adView;
+    // Testing purposes
+    private final String BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
+    // Original
+//    private final String BANNER_AD_UNIT_ID = "ca-app-pub-2383503724460446/8403933355";
+
+    private InterstitialAd interstitialAd;
+    private boolean showAd = false;
+    private final String TEST_DEVICE_ID = "1F5E03F3D435ACF9A110CAEC4896FCEB";
+    // Testing purposes
+    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
+    // Original
+    //    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-2383503724460446/8618721628";
+    private Calendar calendar;
+    private long currentTime, lastMinTime;
 
 
     @Override
@@ -268,6 +287,21 @@ public class SearchActivity extends AppCompatActivity
             public void onClick(View v) {
                 forceLoad = true;
                 initiateLoader();
+            }
+        });
+
+        MobileAds.initialize(this, BANNER_AD_UNIT_ID);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+        adView.loadAd(adRequest);
+
+        interstitialAd = new InterstitialAd(this);
+        interstitialAd.setAdUnitId(INTERSTITAL_AD_UNIT_ID);
+        interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
+        interstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
             }
         });
 
@@ -458,6 +492,13 @@ public class SearchActivity extends AppCompatActivity
             bNext.setEnabled(true);
             bNext.setTextColor(getResources().getColor(R.color.colorAccent));
         }
+
+        calendar = Calendar.getInstance();
+        currentTime = calendar.getTimeInMillis();
+        if (interstitialAd.isLoaded() && (index % 7 == 0) && index != 0 && (currentTime - lastMinTime > 1000 * 30)) {
+            interstitialAd.show();
+            lastMinTime = currentTime;
+        }
         return index;
     }
 
@@ -532,6 +573,7 @@ public class SearchActivity extends AppCompatActivity
 
         errorContainer = (ConstraintLayout) findViewById(R.id.errorContainer);
         bRefresh = (ImageButton) findViewById(R.id.bRefresh);
+        adView = (AdView) findViewById(R.id.adView);
     }
 
     @Override
@@ -544,31 +586,9 @@ public class SearchActivity extends AppCompatActivity
             searchContainer.setVisibility(View.GONE);
             sortContainer.setVisibility(View.GONE);
         } else {
-            TextView tvTitle = new TextView(this);
-            tvTitle.setText("Sure to exit ?");
-            tvTitle.setTypeface(ROBOTO_LIGHT);
-            tvTitle.setTextColor(Color.WHITE);
-            tvTitle.setTextSize(20f);
-            tvTitle.setPadding(50,20,20,20);
-            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
-            builder.setCustomTitle(tvTitle)
-                    .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            SearchActivity.super.onBackPressed();
-                        }
-                    })
-                    .setNegativeButton("No", null);
-            AlertDialog dialog = builder.show();
-            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-            positiveButton.setTextColor(getResources().getColor(R.color.colorAccent2));
-            positiveButton.setTypeface(ROBOTO_LIGHT);
-            negativeButton.setTextColor(getResources().getColor(R.color.colorAccent2));
-            negativeButton.setTypeface(ROBOTO_LIGHT);
+            super.onBackPressed();
         }
     }
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -662,4 +682,16 @@ public class SearchActivity extends AppCompatActivity
         Log.e(TAG, "onPause: ");
         savedInstanceIndex = viewPager.getCurrentItem();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        calendar = Calendar.getInstance();
+        currentTime = calendar.getTimeInMillis();
+        if (interstitialAd.isLoaded() && (currentTime - lastMinTime > 1000 * 30)) {
+            interstitialAd.show();
+            lastMinTime = currentTime;
+        }
+    }
+
 }
