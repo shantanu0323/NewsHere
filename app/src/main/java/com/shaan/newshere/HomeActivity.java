@@ -1,5 +1,9 @@
 package com.shaan.newshere;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -25,6 +30,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -65,7 +71,10 @@ public class HomeActivity extends AppCompatActivity
     private ProgressBar loadingIndicator;
     private String previousCountryCode;
     private int savedInstanceIndex = 0;
-
+    private ConstraintLayout errorContainer;
+    private ImageButton bRefresh;
+    private int LAST_LOADER_ID;
+    private boolean forceLoad = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +142,13 @@ public class HomeActivity extends AppCompatActivity
         CustomSpinnerAdapter spinnerAdapter = new CustomSpinnerAdapter(getApplicationContext(), flags, countryNames);
         spinner.setAdapter(spinnerAdapter);
 
+        bRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                forceLoad = true;
+                initiateLoader();
+            }
+        });
     }
 
     private void initiateLoader() {
@@ -147,7 +163,14 @@ public class HomeActivity extends AppCompatActivity
         if (networkInfo != null && networkInfo.isConnected()) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
             loadingIndicator.setVisibility(View.VISIBLE);
+            errorContainer.setVisibility(View.GONE);
             LoaderManager loaderManager = getSupportLoaderManager();
+            if (forceLoad) {
+                loaderManager.restartLoader(LAST_LOADER_ID, null, this);
+                forceLoad = false;
+            } else {
+                LAST_LOADER_ID = NEWS_LOADER_ID;
+            }
             if (previousCountryCode.equals(COUNTRY_CODE)) {
                 loaderManager.initLoader(NEWS_LOADER_ID, null, this);
             } else {
@@ -156,7 +179,8 @@ public class HomeActivity extends AppCompatActivity
         } else {
             View loadingIndicator = findViewById(R.id.loading_indicator);
             loadingIndicator.setVisibility(View.GONE);
-            Toast.makeText(getApplicationContext(), "NO INTERNET CONNECTION", Toast.LENGTH_LONG).show();
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with you internet connectivity");
+            errorContainer.setVisibility(View.VISIBLE);
         }
     }
 
@@ -205,7 +229,28 @@ public class HomeActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            TextView tvTitle = new TextView(this);
+            tvTitle.setText("Sure to exit ?");
+            tvTitle.setTypeface(ROBOTO_LIGHT);
+            tvTitle.setTextColor(Color.WHITE);
+            tvTitle.setTextSize(20f);
+            tvTitle.setPadding(50,20,20,20);
+            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
+            builder.setCustomTitle(tvTitle)
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            HomeActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton("No", null);
+            AlertDialog dialog = builder.show();
+            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            positiveButton.setTextColor(getResources().getColor(R.color.colorAccent2));
+            positiveButton.setTypeface(ROBOTO_LIGHT);
+            negativeButton.setTextColor(getResources().getColor(R.color.colorAccent2));
+            negativeButton.setTypeface(ROBOTO_LIGHT);
         }
     }
 
@@ -243,6 +288,8 @@ public class HomeActivity extends AppCompatActivity
         bPrev = (Button) findViewById(R.id.bPrev);
         bNext = (Button) findViewById(R.id.bNext);
         loadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator);
+        errorContainer = (ConstraintLayout) findViewById(R.id.errorContainer);
+        bRefresh = (ImageButton) findViewById(R.id.bRefresh);
     }
 
     private void initFonts() {
@@ -261,6 +308,13 @@ public class HomeActivity extends AppCompatActivity
     public void onLoadFinished(Loader<List<News>> loader, List<News> newsList) {
         Log.i(TAG, "onLoadFinished: CALLED");
         loadingIndicator.setVisibility(View.GONE);
+
+        if (newsList == null) {
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("Couldn't reach servers at the moment");
+            errorContainer.setVisibility(View.VISIBLE);
+        } else {
+            errorContainer.setVisibility(View.GONE);
+        }
 
         newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
         viewPager.setAdapter(newsAdapter);
@@ -322,5 +376,6 @@ public class HomeActivity extends AppCompatActivity
         Log.e(TAG, "onPause: ");
         savedInstanceIndex = viewPager.getCurrentItem();
     }
+
 
 }

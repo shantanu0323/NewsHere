@@ -1,8 +1,11 @@
 package com.shaan.newshere;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.graphics.Typeface;
@@ -22,6 +25,7 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,10 +33,12 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -70,6 +76,12 @@ public class CategoryActivity extends AppCompatActivity
     private static final int MAXIMUM_PAGE = 20;
     private boolean LOADER_INITIATED = false;
     private int savedInstanceIndex = 0;
+
+    private ConstraintLayout errorContainer;
+    private ImageButton bRefresh;
+    private int LAST_LOADER_ID;
+    private boolean forceLoad = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,6 +147,14 @@ public class CategoryActivity extends AppCompatActivity
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+
+        bRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                forceLoad = true;
+                initiateLoader();
+            }
+        });
     }
 
     private void initiateLoader() {
@@ -149,6 +169,7 @@ public class CategoryActivity extends AppCompatActivity
         if (networkInfo != null && networkInfo.isConnected()) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
             loadingIndicator.setVisibility(View.VISIBLE);
+            errorContainer.setVisibility(View.GONE);
             LoaderManager loaderManager = getSupportLoaderManager();
             int tabPos = getTabPosition();
             int spinnerPos = getSpinnerPosition();
@@ -158,10 +179,17 @@ public class CategoryActivity extends AppCompatActivity
             args.putInt(TAB_POSITION, tabPos);
             args.putInt(SPINNER_POSITION, spinnerPos);
             LOADER_INITIATED = true;
+            if (forceLoad) {
+                loaderManager.restartLoader(LAST_LOADER_ID, args, this);
+                forceLoad = false;
+            } else {
+                LAST_LOADER_ID = NEWS_LOADER_ID;
+            }
             loaderManager.initLoader(NEWS_LOADER_ID, args, this);
         } else {
             loadingIndicator.setVisibility(View.GONE);
-            Toast.makeText(getApplicationContext(), "NO INTERNET CONNECTION", Toast.LENGTH_LONG).show();
+            ((TextView)errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with you internet connectivity");
+            errorContainer.setVisibility(View.VISIBLE);
         }
     }
 
@@ -225,6 +253,14 @@ public class CategoryActivity extends AppCompatActivity
         if (!LOADER_INITIATED) {
             return;
         }
+
+        if (newsList == null) {
+            ((TextView)errorContainer.findViewById(R.id.tvErrorDesc)).setText("Couldn't reach servers at the moment");
+            errorContainer.setVisibility(View.VISIBLE);
+        } else {
+            errorContainer.setVisibility(View.GONE);
+        }
+
         newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
         viewPager.setAdapter(newsAdapter);
         viewPager.setCurrentItem(savedInstanceIndex);
@@ -296,10 +332,12 @@ public class CategoryActivity extends AppCompatActivity
         } else if (id == R.id.nav_top_headlines) {
             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.nav_search) {
             // Open the Search Activity
             Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -319,7 +357,8 @@ public class CategoryActivity extends AppCompatActivity
         llPagerDots = (LinearLayout) findViewById(R.id.pager_dots);
         bPrev = (Button) findViewById(R.id.bPrev);
         bNext = (Button) findViewById(R.id.bNext);
-    }
+        errorContainer = (ConstraintLayout) findViewById(R.id.errorContainer);
+        bRefresh = (ImageButton) findViewById(R.id.bRefresh);  }
 
     private void initFonts() {
         ROBOTO_LIGHT = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_light.ttf");
@@ -332,7 +371,28 @@ public class CategoryActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            TextView tvTitle = new TextView(this);
+            tvTitle.setText("Sure to exit ?");
+            tvTitle.setTypeface(ROBOTO_LIGHT);
+            tvTitle.setTextColor(Color.WHITE);
+            tvTitle.setTextSize(20f);
+            tvTitle.setPadding(50,20,20,20);
+            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
+            builder.setCustomTitle(tvTitle)
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            CategoryActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton("No", null);
+            AlertDialog dialog = builder.show();
+            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            positiveButton.setTextColor(getResources().getColor(R.color.colorAccent2));
+            positiveButton.setTypeface(ROBOTO_LIGHT);
+            negativeButton.setTextColor(getResources().getColor(R.color.colorAccent2));
+            negativeButton.setTypeface(ROBOTO_LIGHT);
         }
     }
 

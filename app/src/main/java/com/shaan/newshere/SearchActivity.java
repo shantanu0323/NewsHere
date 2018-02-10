@@ -1,7 +1,9 @@
 package com.shaan.newshere;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -10,6 +12,7 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
@@ -18,6 +21,7 @@ import android.support.v4.view.ViewPager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -89,6 +93,11 @@ public class SearchActivity extends AppCompatActivity
     private LinearLayout llAction;
     private ImageButton bPrevPage, bNextPage;
     private int savedInstanceIndex = 0;
+
+    private ConstraintLayout errorContainer;
+    private ImageButton bRefresh;
+    private int LAST_LOADER_ID;
+    private boolean forceLoad = false;
 
 
     @Override
@@ -254,6 +263,14 @@ public class SearchActivity extends AppCompatActivity
             }
         });
 
+        bRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                forceLoad = true;
+                initiateLoader();
+            }
+        });
+
     }
 
     private void initiateLoader() {
@@ -268,6 +285,7 @@ public class SearchActivity extends AppCompatActivity
         if (networkInfo != null && networkInfo.isConnected()) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
             loadingIndicator.setVisibility(View.VISIBLE);
+            errorContainer.setVisibility(View.GONE);
             LoaderManager loaderManager = getSupportLoaderManager();
             String url = BASE_URL + "&from=" + fromDate;
             url += "&to=" + toDate;
@@ -276,8 +294,15 @@ public class SearchActivity extends AppCompatActivity
             if (queryText != null) {
                 url += "&q=" + queryText;
             }
+
             Bundle args = new Bundle();
             args.putString(URL_KEY, url);
+            if (forceLoad) {
+                loaderManager.restartLoader(LAST_LOADER_ID, args, this);
+                forceLoad = false;
+            } else {
+                LAST_LOADER_ID = NEWS_LOADER_ID;
+            }
             if (!loaderInitiated) {
                 loaderManager.initLoader(NEWS_LOADER_ID, args, this);
                 loaderInitiated = true;
@@ -287,7 +312,8 @@ public class SearchActivity extends AppCompatActivity
         } else {
             View loadingIndicator = findViewById(R.id.loading_indicator);
             loadingIndicator.setVisibility(View.GONE);
-            Toast.makeText(getApplicationContext(), "NO INTERNET CONNECTION", Toast.LENGTH_LONG).show();
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with you internet connectivity");
+            errorContainer.setVisibility(View.VISIBLE);
         }
     }
 
@@ -302,6 +328,13 @@ public class SearchActivity extends AppCompatActivity
     public void onLoadFinished(Loader<List<News>> loader, List<News> newsList) {
         Log.i(TAG, "onLoadFinished: CALLED");
         loadingIndicator.setVisibility(View.GONE);
+
+        if (newsList == null) {
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("Couldn't reach servers at the moment");
+            errorContainer.setVisibility(View.VISIBLE);
+        } else {
+            errorContainer.setVisibility(View.GONE);
+        }
 
         newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
         viewPager.setAdapter(newsAdapter);
@@ -496,6 +529,9 @@ public class SearchActivity extends AppCompatActivity
         llAction.setVisibility(View.GONE);
         bPrevPage = (ImageButton) findViewById(R.id.bPrevPage);
         bNextPage = (ImageButton) findViewById(R.id.bNextPage);
+
+        errorContainer = (ConstraintLayout) findViewById(R.id.errorContainer);
+        bRefresh = (ImageButton) findViewById(R.id.bRefresh);
     }
 
     @Override
@@ -508,9 +544,31 @@ public class SearchActivity extends AppCompatActivity
             searchContainer.setVisibility(View.GONE);
             sortContainer.setVisibility(View.GONE);
         } else {
-            super.onBackPressed();
+            TextView tvTitle = new TextView(this);
+            tvTitle.setText("Sure to exit ?");
+            tvTitle.setTypeface(ROBOTO_LIGHT);
+            tvTitle.setTextColor(Color.WHITE);
+            tvTitle.setTextSize(20f);
+            tvTitle.setPadding(50,20,20,20);
+            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
+            builder.setCustomTitle(tvTitle)
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            SearchActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton("No", null);
+            AlertDialog dialog = builder.show();
+            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            positiveButton.setTextColor(getResources().getColor(R.color.colorAccent2));
+            positiveButton.setTypeface(ROBOTO_LIGHT);
+            negativeButton.setTextColor(getResources().getColor(R.color.colorAccent2));
+            negativeButton.setTypeface(ROBOTO_LIGHT);
         }
     }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -521,9 +579,11 @@ public class SearchActivity extends AppCompatActivity
         if (id == R.id.nav_categories) {
             Intent intent = new Intent(getApplicationContext(), CategoryActivity.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.nav_top_headlines) {
             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.nav_search) {
             // Do nothing
         } else if (id == R.id.nav_share) {
@@ -553,10 +613,6 @@ public class SearchActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-
-//    public boolean isAlpha(String name) {
-//        return name.matches("[a-z]+");
-//    }
 
     @Override
     public void onDatePicked(int year, int month, int day) {
