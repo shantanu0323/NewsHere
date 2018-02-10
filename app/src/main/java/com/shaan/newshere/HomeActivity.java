@@ -23,8 +23,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -66,6 +64,7 @@ public class HomeActivity extends AppCompatActivity
     private Spinner spinner;
     private ProgressBar loadingIndicator;
     private String previousCountryCode;
+    private int savedInstanceIndex = 0;
 
 
     @Override
@@ -265,6 +264,8 @@ public class HomeActivity extends AppCompatActivity
 
         newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
         viewPager.setAdapter(newsAdapter);
+        viewPager.setCurrentItem(savedInstanceIndex);
+
 
         setupPagerIndidcatorDots();
         ivArrayDotsPager[0].setImageResource(R.drawable.selected_dot);
@@ -314,4 +315,12 @@ public class HomeActivity extends AppCompatActivity
     public void onLoaderReset(Loader<List<News>> loader) {
 
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e(TAG, "onPause: ");
+        savedInstanceIndex = viewPager.getCurrentItem();
+    }
+
 }

@@ -10,6 +10,7 @@
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:typeface">serif</item>
         <item name="android:textAppearance">@style/my_tab_text</item>
+        <item name="android:listDivider">@color/colorListDivider</item>
     </style>
 
     <style name="CustomDatePickerDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
@@ -49,4 +50,5 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <color name="colorListDivider">#b54348</color>
 </resources>

@@ -63,15 +63,13 @@ public class CategoryActivity extends AppCompatActivity
 
     private static String BASE_URL = "https://newsapi.org/v2/top-headlines?apiKey=d98a0731ab834d3cb605d8ac24dd7072";
     public static String[] countryCodes = {"in", "au", "ca", "cn", "fr", "de", "it", "jp"};
-    public static String[] categories = {"Business", "Entertainment", "Politics", "General", "Health", "Science", "Sports", "Technology"};
-    private static String prevUrl = "blank";
+    public static String[] categories = {"Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology"};
 
-    private static final String POSITION = "position";
     private static final String TAB_POSITION = "tab_position";
     private static final String SPINNER_POSITION = "spinner_position";
-    private static final String LOADER_URL_KEY = "loader_url";
     private static final int MAXIMUM_PAGE = 20;
     private boolean LOADER_INITIATED = false;
+    private int savedInstanceIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,6 +227,7 @@ public class CategoryActivity extends AppCompatActivity
         }
         newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
         viewPager.setAdapter(newsAdapter);
+        viewPager.setCurrentItem(savedInstanceIndex);
 
         setupPagerIndidcatorDots();
         ivArrayDotsPager[0].setImageResource(R.drawable.selected_dot);
@@ -337,4 +336,10 @@ public class CategoryActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e(TAG, "onPause: ");
+        savedInstanceIndex = viewPager.getCurrentItem();
+    }
 }

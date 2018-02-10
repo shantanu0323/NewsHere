@@ -63,12 +63,6 @@
                 android:text="Entertainment" />
 
             <android.support.design.widget.TabItem
-                android:id="@+id/politics"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Politics" />
-
-            <android.support.design.widget.TabItem
                 android:id="@+id/general"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

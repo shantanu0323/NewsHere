@@ -28,7 +28,7 @@ public final class QueryUtils {
     private QueryUtils() {
     }
 
-    public static List<News> fetchNewsData(String requestUrl) {
+    public static List<News> fetchNewsData(String requestUrl) throws IOException {
 //        Log.i(TAG, "fetchNewsData: CALLED");
         // Create URL object
         URL url = createUrl(requestUrl);
@@ -39,7 +39,7 @@ public final class QueryUtils {
             jsonResponse = makeHttpRequest(url);
             Log.i(TAG, "fetchNewsData: JSON RESPONSE FETCHED");
         } catch (IOException e) {
-            Log.e(TAG, "Problem making the HTTP request.", e);
+            Log.e(TAG, "Problem making the HTTP request.");
         }
 
         // Extract relevant fields from the JSON response and create a list of {@link News}s
@@ -87,7 +87,7 @@ public final class QueryUtils {
                 Log.e(TAG, "Error response code: " + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
-            Log.e(TAG, "Problem retrieving the news JSON results.", e);
+            Log.e(TAG, "Problem retrieving the news JSON results.");
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

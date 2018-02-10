@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Loader;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -36,7 +37,13 @@ class NewsLoader extends AsyncTaskLoader<List<News>> {
         }
 
         // Perform the network request, parse the response, and extract a list of news.
-        List<News> newsList = QueryUtils.fetchNewsData(queryUrl);
+        List<News> newsList = null;
+        try {
+            newsList = QueryUtils.fetchNewsData(queryUrl);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, "loadInBackground: PROBLEM FETCHING DATA : ", e);
+        }
         return newsList;
     }
 }

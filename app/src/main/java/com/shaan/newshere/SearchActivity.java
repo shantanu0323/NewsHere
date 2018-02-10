@@ -88,6 +88,7 @@ public class SearchActivity extends AppCompatActivity
     private NewsAdapter newsAdapter;
     private LinearLayout llAction;
     private ImageButton bPrevPage, bNextPage;
+    private int savedInstanceIndex = 0;
 
 
     @Override
@@ -139,10 +140,6 @@ public class SearchActivity extends AppCompatActivity
                     queryText = query.toLowerCase();
                     searchContainer.setVisibility(View.GONE);
                     initiateLoader();
-//                    } else {
-//                        etQuery.setErrorEnabled(true);
-//                        etQuery.setError("Please enter a valid queryText");
-//                    }
                 } else {
                     etQuery.setErrorEnabled(true);
                     etQuery.setError("Query cannot be empty");
@@ -308,6 +305,7 @@ public class SearchActivity extends AppCompatActivity
 
         newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
         viewPager.setAdapter(newsAdapter);
+        viewPager.setCurrentItem(savedInstanceIndex);
 
         setupPagerIndidcatorDots();
         ivArrayDotsPager[0].setImageResource(R.drawable.selected_dot);
@@ -602,4 +600,10 @@ public class SearchActivity extends AppCompatActivity
         ROBOTO_THIN = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_thin.ttf");
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e(TAG, "onPause: ");
+        savedInstanceIndex = viewPager.getCurrentItem();
+    }
 }
