@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.graphics.Typeface;
@@ -24,6 +26,7 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.transition.Explode;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
@@ -31,6 +34,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.view.animation.BounceInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -104,10 +109,13 @@ public class CategoryActivity extends AppCompatActivity
     //    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-2383503724460446/8618721628";
     private Calendar calendar;
     private long currentTime, lastMinTime;
+    private ActivityOptionsCompat compat;
+    private NewsHere newsHere;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupWindowAnimations();
         setContentView(R.layout.activity_category);
 
         findViews();
@@ -174,6 +182,10 @@ public class CategoryActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 forceLoad = true;
+                viewPager.setVisibility(View.GONE);
+                bPrev.setVisibility(View.GONE);
+                bNext.setVisibility(View.GONE);
+                llPagerDots.setVisibility(View.GONE);
                 initiateLoader();
             }
         });
@@ -247,9 +259,11 @@ public class CategoryActivity extends AppCompatActivity
         }
         calendar = Calendar.getInstance();
         currentTime = calendar.getTimeInMillis();
+        lastMinTime = newsHere.getLastMinTime();
         if (interstitialAd.isLoaded() && (index % 7 == 0) && index != 0 && (currentTime - lastMinTime > 1000 * 30)) {
             interstitialAd.show();
             lastMinTime = currentTime;
+            newsHere.setLastMinTime(lastMinTime);
         }
         return index;
     }
@@ -303,6 +317,10 @@ public class CategoryActivity extends AppCompatActivity
             errorContainer.setVisibility(View.VISIBLE);
         } else {
             errorContainer.setVisibility(View.GONE);
+            viewPager.setVisibility(View.VISIBLE);
+            bPrev.setVisibility(View.VISIBLE);
+            bNext.setVisibility(View.VISIBLE);
+            llPagerDots.setVisibility(View.VISIBLE);
         }
 
         newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
@@ -374,14 +392,28 @@ public class CategoryActivity extends AppCompatActivity
         if (id == R.id.nav_categories) {
             // Do Nothing ...
         } else if (id == R.id.nav_top_headlines) {
+            newsHere.setSourceActivity("category");
+            newsHere.setTargetActivity("home");
             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-            startActivity(intent);
-            finish();
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent, compat.toBundle());
+//            finish();
+//            Log.e(TAG, "onNavigationItemSelected: CATEGORY finish()");
         } else if (id == R.id.nav_search) {
             // Open the Search Activity
             Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
-            startActivity(intent);
-            finish();
+            startActivity(intent, compat.toBundle());
+
+//            if (newsHere.getSourceActivity().equals("search")) {
+//                finish();
+//                Log.e(TAG, "onNavigationItemSelected: CATEGORY finish()");
+//            } else {
+//                Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                startActivity(intent, compat.toBundle());
+//            }
+            newsHere.setSourceActivity("category");
+            newsHere.setTargetActivity("search");
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -394,6 +426,7 @@ public class CategoryActivity extends AppCompatActivity
     }
 
     private void findViews() {
+        newsHere = (NewsHere) getApplication();
         spinner = (Spinner) findViewById(R.id.spinner);
         loadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -404,6 +437,7 @@ public class CategoryActivity extends AppCompatActivity
         errorContainer = (ConstraintLayout) findViewById(R.id.errorContainer);
         bRefresh = (ImageButton) findViewById(R.id.bRefresh);
         adView = (AdView) findViewById(R.id.adView);
+        compat = ActivityOptionsCompat.makeSceneTransitionAnimation(CategoryActivity.this, null);
     }
 
     private void initFonts() {
@@ -417,6 +451,7 @@ public class CategoryActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            Log.e(TAG, "onBackPressed : CATEGORY finish()");
             TextView tvTitle = new TextView(this);
             tvTitle.setText("Sure to exit ?");
             tvTitle.setTypeface(ROBOTO_LIGHT);
@@ -425,10 +460,12 @@ public class CategoryActivity extends AppCompatActivity
             tvTitle.setPadding(50, 20, 20, 20);
             AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
             builder.setCustomTitle(tvTitle)
-                    .setCancelable(false)
+                    .setCancelable(true)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            CategoryActivity.super.onBackPressed();
+//                            CategoryActivity.super.onBackPressed();
+                            newsHere.setShouldExit(true);
+                            finish();
                         }
                     })
                     .setNegativeButton("No", null);
@@ -445,18 +482,48 @@ public class CategoryActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        Log.e(TAG, "onPause: ");
         savedInstanceIndex = viewPager.getCurrentItem();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.e(TAG, "onResume: shouldExit = "+ newsHere.isShouldExit());
+        if (newsHere.isShouldExit()) {
+            finish();
+        }
         calendar = Calendar.getInstance();
         currentTime = calendar.getTimeInMillis();
-        if (interstitialAd.isLoaded() && (currentTime - lastMinTime > 1000 * 30)) {
-            interstitialAd.show();
-            lastMinTime = currentTime;
+        lastMinTime = newsHere.getLastMinTime();
+        if (!newsHere.isExiting()) {
+            if (interstitialAd.isLoaded() && (currentTime - lastMinTime > 1000 * 30)) {
+                interstitialAd.show();
+                lastMinTime = currentTime;
+                newsHere.setLastMinTime(lastMinTime);
+            }
+        } else {
+            newsHere.setExiting(false);
         }
+    }
+
+    private void setupWindowAnimations() {
+        Explode explode = new Explode();
+        explode.setDuration(1000);
+        explode.setInterpolator(new OvershootInterpolator());
+        getWindow().setEnterTransition(explode);
+        getWindow().setExitTransition(explode);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.e(TAG, "onStart: shouldExit = " + newsHere.isShouldExit());
+        if (newsHere.isShouldExit()) {
+            finish();
+        }
+//        if (newsHere.getTargetActivity().equals("home")) {
+//            finish();
+//            Log.e(TAG, "onStart : CATEGORY finish()");
+//        }
     }
 }

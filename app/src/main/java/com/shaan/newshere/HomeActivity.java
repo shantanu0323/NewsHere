@@ -1,8 +1,11 @@
 package com.shaan.newshere;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +18,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.transition.Explode;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
@@ -27,6 +31,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -80,6 +85,7 @@ public class HomeActivity extends AppCompatActivity
     private ImageButton bRefresh;
     private int LAST_LOADER_ID;
     private boolean forceLoad = false;
+    private ActivityOptionsCompat compat;
 
     private AdView adView;
     // Testing purposes
@@ -96,12 +102,13 @@ public class HomeActivity extends AppCompatActivity
     //    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-2383503724460446/8618721628";
     private Calendar calendar;
     private long currentTime, lastMinTime;
+    private NewsHere newsHere;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupWindowAnimations();
         setContentView(R.layout.activity_home);
-//        Utils.overrideFonts(this, findViewById(android.R.id.content));
 
         findViews();
         initFonts();
@@ -167,6 +174,10 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 forceLoad = true;
+                viewPager.setVisibility(View.GONE);
+                bPrev.setVisibility(View.GONE);
+                bNext.setVisibility(View.GONE);
+                llPagerDots.setVisibility(View.GONE);
                 initiateLoader();
             }
         });
@@ -240,6 +251,7 @@ public class HomeActivity extends AppCompatActivity
         if (interstitialAd.isLoaded() && (index % 7 == 0) && index != 0 && (currentTime - lastMinTime > 1000 * 30)) {
             interstitialAd.show();
             lastMinTime = currentTime;
+            newsHere.setLastMinTime(lastMinTime);
         }
         return index;
     }
@@ -280,10 +292,12 @@ public class HomeActivity extends AppCompatActivity
             tvTitle.setPadding(50, 20, 20, 20);
             AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
             builder.setCustomTitle(tvTitle)
-                    .setCancelable(false)
+                    .setCancelable(true)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            HomeActivity.super.onBackPressed();
+//                            HomeActivity.super.onBackPressed();
+                            newsHere.setShouldExit(true);
+                            finish();
                         }
                     })
                     .setNegativeButton("No", null);
@@ -305,15 +319,21 @@ public class HomeActivity extends AppCompatActivity
 
         if (id == R.id.nav_categories) {
             Intent intent = new Intent(getApplicationContext(), CategoryActivity.class);
-            startActivity(intent);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            newsHere.setSourceActivity("home");
+            newsHere.setTargetActivity("category");
+            startActivity(intent, compat.toBundle());
 
         } else if (id == R.id.nav_top_headlines) {
             // Do nothing
         } else if (id == R.id.nav_search) {
             // Open the Search Activity
             Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
-            startActivity(intent);
-            finish();
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            newsHere.setSourceActivity("home");
+            newsHere.setTargetActivity("search");
+            startActivity(intent, compat.toBundle());
+//            finish();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -335,6 +355,8 @@ public class HomeActivity extends AppCompatActivity
         errorContainer = (ConstraintLayout) findViewById(R.id.errorContainer);
         bRefresh = (ImageButton) findViewById(R.id.bRefresh);
         adView = (AdView) findViewById(R.id.adView);
+        compat = ActivityOptionsCompat.makeSceneTransitionAnimation(HomeActivity.this, null);
+        newsHere = (NewsHere) getApplication();
     }
 
     private void initFonts() {
@@ -359,6 +381,10 @@ public class HomeActivity extends AppCompatActivity
             errorContainer.setVisibility(View.VISIBLE);
         } else {
             errorContainer.setVisibility(View.GONE);
+            viewPager.setVisibility(View.VISIBLE);
+            bPrev.setVisibility(View.VISIBLE);
+            bNext.setVisibility(View.VISIBLE);
+            llPagerDots.setVisibility(View.VISIBLE);
         }
 
         newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
@@ -418,18 +444,59 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        Log.e(TAG, "onPause: ");
         savedInstanceIndex = viewPager.getCurrentItem();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        lastMinTime = newsHere.getLastMinTime();
         calendar = Calendar.getInstance();
         currentTime = calendar.getTimeInMillis();
-        if (interstitialAd.isLoaded() && (currentTime - lastMinTime > 1000 * 30)) {
-            interstitialAd.show();
-            lastMinTime = currentTime;
+        Log.e(TAG, "onResume: shouldExit = " + newsHere.isShouldExit() +
+                " : isExiting = " + newsHere.isExiting());
+        if (!newsHere.isShouldExit() && !newsHere.isExiting()) {
+            if (interstitialAd.isLoaded() && (currentTime - lastMinTime > 1000 * 30)) {
+                interstitialAd.show();
+                lastMinTime = currentTime;
+                newsHere.setLastMinTime(lastMinTime);
+            }
+        } else {
+            newsHere.setExiting(false);
         }
+    }
+
+    private void setupWindowAnimations() {
+        Explode explode = new Explode();
+        explode.setDuration(1000);
+        explode.setInterpolator(new OvershootInterpolator());
+        getWindow().setEnterTransition(explode);
+        getWindow().setExitTransition(explode);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.e(TAG, "onStart: shouldExit = " + newsHere.isShouldExit());
+
+        if (newsHere.isShouldExit()) {
+            int instances = newsHere.getInstances() - 1;
+            newsHere.setInstances(instances);
+            if (instances == 0) {
+                newsHere.setShouldExit(false);
+                Log.e(TAG, "onStart: EXITING");
+                newsHere.setExiting(true);
+            }
+            finish();
+        } else {
+            int instances = newsHere.getInstances() + 1;
+            newsHere.setInstances(instances);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e(TAG, "onDestroy: DESTROYED");
     }
 }

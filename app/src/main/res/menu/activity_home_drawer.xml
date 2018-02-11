@@ -4,8 +4,7 @@
     tools:showIn="navigation_view">
 
     <group
-        android:id="@+id/main_menu_group"
-        android:checkableBehavior="single">
+        android:id="@+id/main_menu_group">
         <item
             android:id="@+id/nav_top_headlines"
             android:icon="@mipmap/ic_top_headlines"
@@ -21,8 +20,7 @@
     </group>
 
     <group
-        android:id="@+id/secondary_menu_group"
-        android:checkableBehavior="single">
+        android:id="@+id/secondary_menu_group">
         <item
             android:id="@+id/nav_share"
             android:icon="@drawable/ic_menu_share"
