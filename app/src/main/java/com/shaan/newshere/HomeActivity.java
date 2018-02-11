@@ -41,6 +41,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.eftimoff.viewpagertransformers.DrawFromBackTransformer;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -335,7 +336,8 @@ public class HomeActivity extends AppCompatActivity
             startActivity(intent, compat.toBundle());
 //            finish();
         } else if (id == R.id.nav_share) {
-
+            Intent intent = new Intent(getApplicationContext(), IntroActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_send) {
 
         }
@@ -415,7 +417,7 @@ public class HomeActivity extends AppCompatActivity
 
             }
         });
-        viewPager.setPageTransformer(false, new FlipPageViewTransformer());
+        viewPager.setPageTransformer(false, new DrawFromBackTransformer());
 
 
         bPrev.setOnClickListener(new View.OnClickListener() {

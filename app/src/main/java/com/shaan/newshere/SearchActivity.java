@@ -50,6 +50,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eftimoff.viewpagertransformers.DrawFromBackTransformer;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -417,7 +418,7 @@ public class SearchActivity extends AppCompatActivity
 
             }
         });
-        viewPager.setPageTransformer(false, new FlipPageViewTransformer());
+        viewPager.setPageTransformer(false, new DrawFromBackTransformer());
 
 
         bPrev.setOnClickListener(new View.OnClickListener() {
