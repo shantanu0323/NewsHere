@@ -43,6 +43,10 @@
         <item name="windowNoTitle">true</item>
         <item name="android:typeface">serif</item>
     </style>
+
+    <style name="NavDrawerTextStyle" parent="Base.TextAppearance.AppCompat">
+        <item name="android:textSize">16sp</item>
+    </style>
     <!--Base.TextAppearance.AppCompat-->
     <style name="my_tab_text" parent="Base.Widget.Design.TabLayout">
         <item name="android:textColor">@color/colorAccent</item>

@@ -151,6 +151,7 @@ public class CategoryActivity extends AppCompatActivity
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "onItemSelected: " + countryNames[getSpinnerPosition()]);
+                savedInstanceIndex = 0;
                 initiateLoader();
             }
 
@@ -167,6 +168,7 @@ public class CategoryActivity extends AppCompatActivity
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 Log.d(TAG, "onTabSelected: " + tab.getText());
+                savedInstanceIndex = 0;
                 initiateLoader();
             }
 
@@ -239,7 +241,7 @@ public class CategoryActivity extends AppCompatActivity
             loaderManager.initLoader(NEWS_LOADER_ID, args, this);
         } else {
             loadingIndicator.setVisibility(View.GONE);
-            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with you internet connectivity");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with your internet connectivity");
             errorContainer.setVisibility(View.VISIBLE);
         }
     }
@@ -329,7 +331,7 @@ public class CategoryActivity extends AppCompatActivity
         viewPager.setCurrentItem(savedInstanceIndex);
 
         setupPagerIndidcatorDots();
-        ivArrayDotsPager[0].setImageResource(R.drawable.selected_dot);
+        ivArrayDotsPager[savedInstanceIndex].setImageResource(R.drawable.selected_dot);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -405,14 +407,6 @@ public class CategoryActivity extends AppCompatActivity
             Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
             startActivity(intent, compat.toBundle());
 
-//            if (newsHere.getSourceActivity().equals("search")) {
-//                finish();
-//                Log.e(TAG, "onNavigationItemSelected: CATEGORY finish()");
-//            } else {
-//                Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                startActivity(intent, compat.toBundle());
-//            }
             newsHere.setSourceActivity("category");
             newsHere.setTargetActivity("search");
         } else if (id == R.id.nav_share) {

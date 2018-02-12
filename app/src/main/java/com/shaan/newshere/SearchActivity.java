@@ -128,6 +128,7 @@ public class SearchActivity extends AppCompatActivity
     private long currentTime, lastMinTime;
     private ActivityOptionsCompat compat;
     private NewsHere newsHere;
+    private boolean showSearchContainer;
 
 
     @Override
@@ -136,6 +137,7 @@ public class SearchActivity extends AppCompatActivity
         setupWindowAnimations();
         setContentView(R.layout.activity_search);
 
+        showSearchContainer = true;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -174,7 +176,13 @@ public class SearchActivity extends AppCompatActivity
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 }
                 String query = etQuery.getEditText().getText().toString().trim().toLowerCase();
-                if (query.length() > 0) {
+                if (tvTitle.getText().toString().equals(query)) {
+                    Log.e(TAG, "onClick: SAME");
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    }
+                    searchContainer.setVisibility(View.GONE);
+                } else if (query.length() > 0) {
 //                    if (isAlpha(queryText)) {
                     etQuery.setErrorEnabled(false);
                     tvTitle.setText(query);
@@ -228,6 +236,8 @@ public class SearchActivity extends AppCompatActivity
                 } else {
                     sortPreference = "publishedAt";
                 }
+                currentPageNo = 1;
+                updatePageNoTheme();
                 initiateLoader();
                 sortContainer.setVisibility(View.GONE);
             }
@@ -258,17 +268,7 @@ public class SearchActivity extends AppCompatActivity
             }
         });
 
-        if (currentPageNo == 1) {
-            bPrevPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
-                    (getApplicationContext(), R.color.imageTintColor)));
-            bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
-            bPrevPage.setEnabled(false);
-        } else {
-            bPrevPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
-                    (getApplicationContext(), android.R.color.white)));
-            bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
-            bPrevPage.setEnabled(true);
-        }
+        updatePageNoTheme();
 
         bPrevPage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -292,6 +292,8 @@ public class SearchActivity extends AppCompatActivity
                     bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
                     bPrevPage.setEnabled(true);
                 }
+                savedInstanceIndex = 0;
+                updatePageNoTheme();
             }
         });
 
@@ -322,6 +324,20 @@ public class SearchActivity extends AppCompatActivity
             }
         });
 
+    }
+
+    private void updatePageNoTheme() {
+        if (currentPageNo == 1) {
+            bPrevPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                    (getApplicationContext(), R.color.imageTintColor)));
+            bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+            bPrevPage.setEnabled(false);
+        } else {
+            bPrevPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                    (getApplicationContext(), android.R.color.white)));
+            bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+            bPrevPage.setEnabled(true);
+        }
     }
 
     private void initiateLoader() {
@@ -363,7 +379,7 @@ public class SearchActivity extends AppCompatActivity
         } else {
             View loadingIndicator = findViewById(R.id.loading_indicator);
             loadingIndicator.setVisibility(View.GONE);
-            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with you internet connectivity");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with your internet connectivity");
             errorContainer.setVisibility(View.VISIBLE);
         }
     }
@@ -467,6 +483,9 @@ public class SearchActivity extends AppCompatActivity
                     bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
                     bNextPage.setEnabled(true);
                 }
+                savedInstanceIndex = 0;
+                updatePageNoTheme();
+
             }
         });
 
@@ -645,17 +664,6 @@ public class SearchActivity extends AppCompatActivity
         if (id == R.id.nav_categories) {
             Intent intent = new Intent(getApplicationContext(), CategoryActivity.class);
             startActivity(intent, compat.toBundle());
-
-//
-//            if (newsHere.getSourceActivity().equals("category")) {
-//                finish();
-//                Log.e(TAG, "onNavigationItemSelected: SEARCH finish()");
-//            } else {
-//                Intent intent = new Intent(getApplicationContext(), CategoryActivity.class);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                startActivity(intent, compat.toBundle());
-//                Log.e(TAG, "onNavigationItemSelected: CATEGORY started()");
-//            }
             newsHere.setSourceActivity("search");
             newsHere.setTargetActivity("category");
 
@@ -663,10 +671,7 @@ public class SearchActivity extends AppCompatActivity
             newsHere.setSourceActivity("search");
             newsHere.setTargetActivity("home");
             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent, compat.toBundle());
-//            finish();
-//            Log.e(TAG, "onNavigationItemSelected: SEARCH finish()");
         } else if (id == R.id.nav_search) {
             // Do nothing
         } else if (id == R.id.nav_share) {
@@ -729,6 +734,8 @@ public class SearchActivity extends AppCompatActivity
             tvDateRange.setText(dateRange);
             dateRange = "";
             dateFetched = false;
+            currentPageNo = 1;
+            updatePageNoTheme();
             initiateLoader();
         }
 
@@ -752,6 +759,13 @@ public class SearchActivity extends AppCompatActivity
         if (newsHere.isShouldExit()) {
             finish();
         }
+        if (showSearchContainer){
+            searchContainer.setVisibility(View.VISIBLE);
+            showSearchContainer = false;
+        } else {
+            searchContainer.setVisibility(View.GONE);
+        }
+        sortContainer.setVisibility(View.GONE);
         calendar = Calendar.getInstance();
         lastMinTime = newsHere.getLastMinTime();
         currentTime = calendar.getTimeInMillis();
@@ -781,10 +795,6 @@ public class SearchActivity extends AppCompatActivity
         if (newsHere.isShouldExit()) {
             finish();
         }
-//        if (newsHere.getTargetActivity().equals("home")) {
-//            finish();
-//            Log.e(TAG, "onStart: SEARCH finish" );
-//        }
     }
 
 

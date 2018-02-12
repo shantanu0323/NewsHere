@@ -48,6 +48,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.List;
 
@@ -133,6 +134,8 @@ public class HomeActivity extends AppCompatActivity
         for (int i = 0; i < m.size(); i++) {
 
             MenuItem mi = m.getItem(i);
+
+            Typeface typeface = ROBOTO_LIGHT;
 
             SpannableString s = new SpannableString(mi.getTitle());
             s.setSpan(new CustomTypefaceSpan("", ROBOTO_LIGHT), 0, s.length(),
@@ -222,12 +225,13 @@ public class HomeActivity extends AppCompatActivity
             if (previousCountryCode.equals(COUNTRY_CODE)) {
                 loaderManager.initLoader(NEWS_LOADER_ID, null, this);
             } else {
+                savedInstanceIndex = 0;
                 loaderManager.restartLoader(NEWS_LOADER_ID, null, this);
             }
         } else {
             View loadingIndicator = findViewById(R.id.loading_indicator);
             loadingIndicator.setVisibility(View.GONE);
-            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with you internet connectivity");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with your internet connectivity");
             errorContainer.setVisibility(View.VISIBLE);
         }
     }
@@ -395,7 +399,7 @@ public class HomeActivity extends AppCompatActivity
 
 
         setupPagerIndidcatorDots();
-        ivArrayDotsPager[0].setImageResource(R.drawable.selected_dot);
+        ivArrayDotsPager[savedInstanceIndex].setImageResource(R.drawable.selected_dot);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
