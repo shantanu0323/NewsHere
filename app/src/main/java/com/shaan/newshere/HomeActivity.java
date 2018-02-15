@@ -22,6 +22,7 @@ import android.transition.Explode;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -42,11 +43,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.eftimoff.viewpagertransformers.DrawFromBackTransformer;
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.lang.reflect.Type;
 import java.util.Calendar;
@@ -80,7 +87,7 @@ public class HomeActivity extends AppCompatActivity
 
     private Button bPrev, bNext;
     private Spinner spinner;
-    private ProgressBar loadingIndicator;
+    private LinearLayout loadingIndicator;
     private String previousCountryCode;
     private int savedInstanceIndex = 0;
     private ConstraintLayout errorContainer;
@@ -105,6 +112,8 @@ public class HomeActivity extends AppCompatActivity
     private Calendar calendar;
     private long currentTime, lastMinTime;
     private NewsHere newsHere;
+    private boolean skipMethod = false;
+    private AVLoadingIndicatorView avi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -200,6 +209,7 @@ public class HomeActivity extends AppCompatActivity
                 interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
             }
         });
+
     }
 
     private void initiateLoader() {
@@ -213,7 +223,8 @@ public class HomeActivity extends AppCompatActivity
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnected()) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
-            loadingIndicator.setVisibility(View.VISIBLE);
+            avi.show();
+
             errorContainer.setVisibility(View.GONE);
             LoaderManager loaderManager = getSupportLoaderManager();
             if (forceLoad) {
@@ -231,6 +242,8 @@ public class HomeActivity extends AppCompatActivity
         } else {
             View loadingIndicator = findViewById(R.id.loading_indicator);
             loadingIndicator.setVisibility(View.GONE);
+            avi.hide();
+
             ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with your internet connectivity");
             errorContainer.setVisibility(View.VISIBLE);
         }
@@ -357,12 +370,13 @@ public class HomeActivity extends AppCompatActivity
         llPagerDots = (LinearLayout) findViewById(R.id.pager_dots);
         bPrev = (Button) findViewById(R.id.bPrev);
         bNext = (Button) findViewById(R.id.bNext);
-        loadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator);
+        loadingIndicator = (LinearLayout) findViewById(R.id.loading_indicator);
         errorContainer = (ConstraintLayout) findViewById(R.id.errorContainer);
         bRefresh = (ImageButton) findViewById(R.id.bRefresh);
         adView = (AdView) findViewById(R.id.adView);
         compat = ActivityOptionsCompat.makeSceneTransitionAnimation(HomeActivity.this, null);
         newsHere = (NewsHere) getApplication();
+        avi = (AVLoadingIndicatorView) findViewById(R.id.avi);
     }
 
     private void initFonts() {
@@ -381,6 +395,11 @@ public class HomeActivity extends AppCompatActivity
     public void onLoadFinished(Loader<List<News>> loader, List<News> newsList) {
         Log.i(TAG, "onLoadFinished: CALLED");
         loadingIndicator.setVisibility(View.GONE);
+        avi.hide();
+
+
+//        animatedCircleLoadingView.setVisibility(View.GONE);
+//        animatedCircleLoadingView.resetLoading();
 
         if (newsList == null) {
             ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("Couldn't reach servers at the moment");
@@ -439,6 +458,71 @@ public class HomeActivity extends AppCompatActivity
             }
         });
         bNext.setVisibility(View.VISIBLE);
+
+        new ShowcaseView.Builder(this)
+                .setTarget(new ViewTarget(spinner))
+                .singleShot(100)
+                .blockAllTouches()
+                .setContentTitle("Country Specific Headlines")
+                .setStyle(R.style.CustomShowcaseTheme2)
+                .setContentText("Now see the top headlines of the country you select in their own native language")
+                .setShowcaseEventListener(new OnShowcaseEventListener() {
+                    @Override
+                    public void onShowcaseViewHide(ShowcaseView showcaseView) {
+                        new ShowcaseView.Builder(HomeActivity.this)
+                                .setTarget(new ViewTarget((TextView) findViewById(R.id.dummyReadMore)))
+                                .setContentTitle("Read More")
+                                .setStyle(R.style.CustomShowcaseTheme2)
+                                .singleShot(130)
+                                .blockAllTouches()
+                                .setContentText("Click to read the full article from the source directly")
+                                .setShowcaseEventListener(new OnShowcaseEventListener() {
+                                    @Override
+                                    public void onShowcaseViewHide(ShowcaseView showcaseView) {
+                                        new ShowcaseView.Builder(HomeActivity.this)
+                                                .setTarget(new ViewTarget(llPagerDots))
+                                                .setContentTitle("Swipe Through")
+                                                .singleShot(160)
+                                                .blockAllTouches()
+                                                .setStyle(R.style.CustomShowcaseTheme2)
+                                                .setContentText("Or use the navigation bar at the bottom to move accross the successive news")
+                                                .build();
+                                    }
+
+                                    @Override
+                                    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+                                    }
+
+                                    @Override
+                                    public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+                                    }
+
+                                    @Override
+                                    public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+
+                                    }
+                                })
+                                .build();
+                    }
+
+                    @Override
+                    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+                    }
+
+                    @Override
+                    public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+                    }
+
+                    @Override
+                    public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+
+                    }
+                })
+                .build();
 
     }
 

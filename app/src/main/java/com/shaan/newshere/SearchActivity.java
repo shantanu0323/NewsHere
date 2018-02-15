@@ -26,6 +26,7 @@ import android.transition.Explode;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -51,11 +52,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eftimoff.viewpagertransformers.DrawFromBackTransformer;
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -83,7 +88,7 @@ public class SearchActivity extends AppCompatActivity
     public String toDate;
     private boolean dateFetched = false;
     private TextView tvPages, tvDateRange;
-    private ProgressBar loadingIndicator;
+    private LinearLayout loadingIndicator;
 
     private static final int NEWS_LOADER_ID = 1;
 
@@ -129,6 +134,7 @@ public class SearchActivity extends AppCompatActivity
     private ActivityOptionsCompat compat;
     private NewsHere newsHere;
     private boolean showSearchContainer;
+    private AVLoadingIndicatorView avi;
 
 
     @Override
@@ -324,6 +330,8 @@ public class SearchActivity extends AppCompatActivity
             }
         });
 
+        loadingIndicator.setVisibility(View.GONE);
+        avi.hide();
     }
 
     private void updatePageNoTheme() {
@@ -351,6 +359,7 @@ public class SearchActivity extends AppCompatActivity
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnected()) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
+            avi.show();
             loadingIndicator.setVisibility(View.VISIBLE);
             errorContainer.setVisibility(View.GONE);
             LoaderManager loaderManager = getSupportLoaderManager();
@@ -377,7 +386,7 @@ public class SearchActivity extends AppCompatActivity
                 loaderManager.restartLoader(NEWS_LOADER_ID, args, this);
             }
         } else {
-            View loadingIndicator = findViewById(R.id.loading_indicator);
+            avi.hide();
             loadingIndicator.setVisibility(View.GONE);
             ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with your internet connectivity");
             errorContainer.setVisibility(View.VISIBLE);
@@ -394,6 +403,7 @@ public class SearchActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(Loader<List<News>> loader, List<News> newsList) {
         Log.i(TAG, "onLoadFinished: CALLED");
+        avi.hide();
         loadingIndicator.setVisibility(View.GONE);
 
         if (newsList == null) {
@@ -488,6 +498,74 @@ public class SearchActivity extends AppCompatActivity
 
             }
         });
+
+        new ShowcaseView.Builder(SearchActivity.this)
+                .setTarget(new ViewTarget(bSort))
+                .singleShot(300)
+                .blockAllTouches()
+                .setContentTitle("Sort")
+                .setStyle(R.style.CustomShowcaseTheme2)
+                .setContentText("According to Relevancy, Popularity or Publishing Date")
+                .setShowcaseEventListener(new OnShowcaseEventListener() {
+
+                    @Override
+                    public void onShowcaseViewHide(ShowcaseView showcaseView) {
+                        new ShowcaseView.Builder(SearchActivity.this)
+                                .setTarget(new ViewTarget(bFilterDate))
+                                .setContentTitle("Filter Dates")
+                                .singleShot(330)
+                                .setStyle(R.style.CustomShowcaseTheme2)
+                                .blockAllTouches()
+                                .setContentText("Choose the date range from which you want to see the news articles")
+                                .setShowcaseEventListener(new OnShowcaseEventListener() {
+
+                                    @Override
+                                    public void onShowcaseViewHide(ShowcaseView showcaseView) {
+                                        new ShowcaseView.Builder(SearchActivity.this)
+                                                .setTarget(new ViewTarget(bNextPage))
+                                                .setContentTitle("Move to the Next page")
+                                                .singleShot(360)
+                                                .blockAllTouches()
+                                                .setStyle(R.style.CustomShowcaseTheme2)
+                                                .setContentText("Allows you to view the next 20 articles for the given search query")
+                                                .build();
+
+                                    }
+
+                                    @Override
+                                    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+                                    }
+
+                                    @Override
+                                    public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+                                    }
+
+                                    @Override
+                                    public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+
+                                    }
+                                })
+                                .build();
+                    }
+
+                    @Override
+                    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+                    }
+
+                    @Override
+                    public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+                    }
+
+                    @Override
+                    public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+
+                    }
+                })
+                .build();
 
     }
 
@@ -604,7 +682,7 @@ public class SearchActivity extends AppCompatActivity
         tvDateRange = (TextView) findViewById(R.id.tvDateRange);
         tvDateRange.setVisibility(View.GONE);
 
-        loadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator);
+        loadingIndicator = (LinearLayout) findViewById(R.id.loading_indicator);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         llPagerDots = (LinearLayout) findViewById(R.id.pager_dots);
         bPrev = (Button) findViewById(R.id.bPrev);
@@ -618,6 +696,7 @@ public class SearchActivity extends AppCompatActivity
         bRefresh = (ImageButton) findViewById(R.id.bRefresh);
         adView = (AdView) findViewById(R.id.adView);
         compat = ActivityOptionsCompat.makeSceneTransitionAnimation(SearchActivity.this, null);
+        avi = (AVLoadingIndicatorView) findViewById(R.id.avi);
     }
 
     @Override
@@ -759,8 +838,10 @@ public class SearchActivity extends AppCompatActivity
         if (newsHere.isShouldExit()) {
             finish();
         }
-        if (showSearchContainer){
+        if (showSearchContainer) {
             searchContainer.setVisibility(View.VISIBLE);
+            loadingIndicator.setVisibility(View.GONE);
+            avi.hide();
             showSearchContainer = false;
         } else {
             searchContainer.setVisibility(View.GONE);

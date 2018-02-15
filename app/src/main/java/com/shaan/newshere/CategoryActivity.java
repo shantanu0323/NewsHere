@@ -47,11 +47,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eftimoff.viewpagertransformers.DrawFromBackTransformer;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.Calendar;
 import java.util.List;
@@ -73,7 +76,7 @@ public class CategoryActivity extends AppCompatActivity
     private static Typeface ROBOTO_THIN = null;
     private static Typeface ROBOTO_LIGHT = null;
 
-    private ProgressBar loadingIndicator;
+    private LinearLayout loadingIndicator;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private Button bPrev, bNext;
@@ -112,6 +115,7 @@ public class CategoryActivity extends AppCompatActivity
     private long currentTime, lastMinTime;
     private ActivityOptionsCompat compat;
     private NewsHere newsHere;
+    private AVLoadingIndicatorView avi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,6 +225,7 @@ public class CategoryActivity extends AppCompatActivity
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnected()) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
+            avi.show();
             loadingIndicator.setVisibility(View.VISIBLE);
             errorContainer.setVisibility(View.GONE);
             LoaderManager loaderManager = getSupportLoaderManager();
@@ -241,6 +246,7 @@ public class CategoryActivity extends AppCompatActivity
             loaderManager.initLoader(NEWS_LOADER_ID, args, this);
         } else {
             loadingIndicator.setVisibility(View.GONE);
+            avi.hide();
             ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with your internet connectivity");
             errorContainer.setVisibility(View.VISIBLE);
         }
@@ -310,6 +316,7 @@ public class CategoryActivity extends AppCompatActivity
     public void onLoadFinished(Loader<List<News>> loader, List<News> newsList) {
         Log.i(TAG, "onLoadFinished: CALLED");
         loadingIndicator.setVisibility(View.GONE);
+        avi.hide();
 
         if (!LOADER_INITIATED) {
             return;
@@ -372,7 +379,17 @@ public class CategoryActivity extends AppCompatActivity
         });
         bNext.setVisibility(View.VISIBLE);
 
+
+        new ShowcaseView.Builder(CategoryActivity.this)
+                .setTarget(new ViewTarget(tabLayout))
+                .singleShot(200)
+                .blockAllTouches()
+                .setContentTitle("Switch Through")
+                .setStyle(R.style.CustomShowcaseTheme2)
+                .setContentText("Different categories that satisfies your interests")
+                .build();
     }
+
 
     @Override
     public void onLoaderReset(Loader<List<News>> loader) {
@@ -423,7 +440,7 @@ public class CategoryActivity extends AppCompatActivity
     private void findViews() {
         newsHere = (NewsHere) getApplication();
         spinner = (Spinner) findViewById(R.id.spinner);
-        loadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator);
+        loadingIndicator = (LinearLayout) findViewById(R.id.loading_indicator);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         llPagerDots = (LinearLayout) findViewById(R.id.pager_dots);
@@ -433,6 +450,7 @@ public class CategoryActivity extends AppCompatActivity
         bRefresh = (ImageButton) findViewById(R.id.bRefresh);
         adView = (AdView) findViewById(R.id.adView);
         compat = ActivityOptionsCompat.makeSceneTransitionAnimation(CategoryActivity.this, null);
+        avi = (AVLoadingIndicatorView) findViewById(R.id.avi);
     }
 
     private void initFonts() {
@@ -483,7 +501,7 @@ public class CategoryActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume: shouldExit = "+ newsHere.isShouldExit());
+        Log.e(TAG, "onResume: shouldExit = " + newsHere.isShouldExit());
         if (newsHere.isShouldExit()) {
             finish();
         }
