@@ -94,16 +94,16 @@ public class HomeActivity extends AppCompatActivity
 
     private AdView adView;
     // Testing purposes
-    private final String BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
+//    private final String BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
     // Original
-//    private final String BANNER_AD_UNIT_ID = "ca-app-pub-2383503724460446/8403933355";
+    private final String BANNER_AD_UNIT_ID = "ca-app-pub-2383503724460446/8403933355";
 
     private InterstitialAd interstitialAd;
     private final String TEST_DEVICE_ID = "1F5E03F3D435ACF9A110CAEC4896FCEB";
     // Testing purposes
-    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
+//    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
     // Original
-    //    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-2383503724460446/8618721628";
+    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-2383503724460446/8618721628";
     private Calendar calendar;
     private long currentTime, lastMinTime;
     private NewsHere newsHere;
@@ -192,17 +192,19 @@ public class HomeActivity extends AppCompatActivity
         });
 
         MobileAds.initialize(this, BANNER_AD_UNIT_ID);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR)//.addTestDevice(TEST_DEVICE_ID)
+                .build();
         adView.loadAd(adRequest);
 
         interstitialAd = new InterstitialAd(this);
         interstitialAd.setAdUnitId(INTERSTITAL_AD_UNIT_ID);
-        interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
+        interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR)//.addTestDevice(TEST_DEVICE_ID)
+                .build());
         interstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
-                interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
+                interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR)//.addTestDevice(TEST_DEVICE_ID)
+                        .build());
             }
         });
 

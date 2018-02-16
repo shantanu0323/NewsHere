@@ -99,17 +99,17 @@ public class CategoryActivity extends AppCompatActivity
 
     private AdView adView;
     // Testing purposes
-    private final String BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
+//    private final String BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
     // Original
-//    private final String BANNER_AD_UNIT_ID = "ca-app-pub-2383503724460446/8403933355";
+    private final String BANNER_AD_UNIT_ID = "ca-app-pub-2383503724460446/8403933355";
 
     private InterstitialAd interstitialAd;
     private boolean showAd = false;
     private final String TEST_DEVICE_ID = "1F5E03F3D435ACF9A110CAEC4896FCEB";
     // Testing purposes
-    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
+//    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
     // Original
-    //    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-2383503724460446/8618721628";
+    private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-2383503724460446/8618721628";
     private Calendar calendar;
     private long currentTime, lastMinTime;
     private ActivityOptionsCompat compat;
