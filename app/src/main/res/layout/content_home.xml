@@ -29,7 +29,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/bPrev"
         app:layout_constraintRight_toLeftOf="@+id/bNext"
-        app:layout_constraintTop_toTopOf="@+id/bPrev"></LinearLayout>
+        app:layout_constraintTop_toTopOf="@+id/bPrev"/>
 
     <Button
         android:id="@+id/bPrev"
@@ -37,7 +37,7 @@
         android:layout_height="35dp"
         android:background="@drawable/prev_bg"
         android:fontFamily="@font/roboto_light"
-        android:text="Prev"
+        android:text="@string/prev"
         android:textAllCaps="false"
         android:textColor="@color/colorAccent"
         android:visibility="invisible"
@@ -58,7 +58,7 @@
         android:layout_height="35dp"
         android:background="@drawable/next_bg"
         android:fontFamily="@font/roboto_light"
-        android:text="Next"
+        android:text="@string/next"
         android:textAllCaps="false"
         android:textColor="@color/colorAccent"
         android:visibility="invisible"
@@ -156,7 +156,7 @@
             android:fontFamily="@font/roboto_regular"
             android:gravity="center"
             android:padding="10dp"
-            android:text="Click here to see the next news"
+            android:text="@string/click_here_to_see_the_next_news"
             android:textColor="#fff"
             android:textSize="16sp" />
 
@@ -164,7 +164,8 @@
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:layout_gravity="end"
-            android:src="@drawable/triangle_down_right" />
+            android:src="@drawable/triangle_down_right"
+            android:contentDescription="@string/tdr" />
     </LinearLayout>
 
     <LinearLayout
@@ -186,7 +187,7 @@
             android:fontFamily="@font/roboto_regular"
             android:gravity="center"
             android:padding="10dp"
-            android:text="Click here to see the next news"
+            android:text="@string/click_here_to_see_the_next_news"
             android:textColor="#fff"
             android:textSize="16sp" />
 
@@ -194,7 +195,8 @@
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:layout_gravity="start"
-            android:src="@drawable/triangle_down_left" />
+            android:src="@drawable/triangle_down_left"
+            android:contentDescription="@string/tdl" />
     </LinearLayout>
 
     <LinearLayout

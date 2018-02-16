@@ -38,7 +38,8 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@string/dev_logo"
                     android:src="@mipmap/dev_logo"
                     android:tint="#ddd" />
 
@@ -48,9 +49,9 @@
                     android:fontFamily="@font/roboto_light"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="Powered by newsapi.org"
+                    android:text="@string/powered_by_newsapi_org"
                     android:textColor="#ccc"
-                    android:textSize="10sp" />
+                    android:textSize="@dimen/tv_cat_ts" />
             </LinearLayout>
 
             <com.google.android.gms.ads.AdView xmlns:app="http://schemas.android.com/apk/res-auto"

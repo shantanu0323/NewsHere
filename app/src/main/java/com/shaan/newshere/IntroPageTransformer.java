@@ -68,10 +68,14 @@ public class IntroPageTransformer implements ViewPager.PageTransformer {
                 description.setTranslationY(-pageWidthTimesPosition / 2f);
                 description.setAlpha(1.0f - absPosition);
 
-                title.setTranslationY(-pageWidthTimesPosition / 1f);
+
                 title.setTranslationX(-pageWidthTimesPosition / 1f);
                 title.setAlpha(1.0f - absPosition);
-
+                if (position < 0) {
+                    title.setTranslationY(pageWidthTimesPosition / 1f);
+                } else {
+                    title.setTranslationY(-pageWidthTimesPosition / 1f);
+                }
 //                image.setAlpha(1.0f - absPosition);
 //                image.setTranslationX(-pageWidthTimesPosition * 1.5f);
                 image.setTranslationY(pageWidthTimesPosition / 2f);
@@ -82,11 +86,7 @@ public class IntroPageTransformer implements ViewPager.PageTransformer {
             // Finally, it can be useful to know the direction
             // of the user's swipe - if we're entering or exiting.
             // This is quite simple:
-            if (position < 0) {
-                // Create your out animation here
-            } else {
-                // Create your in animation here
-            }
+
         }
     }
 

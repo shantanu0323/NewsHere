@@ -28,7 +28,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/bPrev"
         app:layout_constraintRight_toLeftOf="@+id/bNext"
-        app:layout_constraintTop_toTopOf="@+id/bPrev"></LinearLayout>
+        app:layout_constraintTop_toTopOf="@+id/bPrev"/>
 
     <Button
         android:id="@+id/bPrev"
@@ -36,7 +36,7 @@
         android:layout_height="35dp"
         android:background="@drawable/prev_bg"
         android:fontFamily="@font/roboto_light"
-        android:text="Prev"
+        android:text="@string/prev"
         android:textAllCaps="false"
         android:textColor="@color/colorAccent"
         android:visibility="invisible"
@@ -49,7 +49,7 @@
         android:layout_height="35dp"
         android:background="@drawable/next_bg"
         android:fontFamily="@font/roboto_light"
-        android:text="Next"
+        android:text="@string/next"
         android:textAllCaps="false"
         android:textColor="@color/colorAccent"
         android:visibility="invisible"
@@ -75,7 +75,8 @@
             android:src="@drawable/error"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/retrieve_error_msg" />
 
         <TextView
             android:id="@+id/tvErrorTitle"
@@ -84,7 +85,7 @@
             android:layout_marginTop="20dp"
             android:fontFamily="@font/roboto_regular"
             android:gravity="center"
-            android:text="Aw Snap !!!"
+            android:text="@string/aw_snap"
             android:textColor="#fff"
             android:textSize="22sp"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -97,7 +98,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_thin"
             android:padding="5dp"
-            android:text="Couldn't reach servers at the moment"
+            android:text="@string/retrieve_error_msg"
             android:textColor="#eee"
             android:textSize="16sp"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -113,12 +114,13 @@
             android:padding="4dp"
             android:scaleType="fitXY"
             android:src="@drawable/ic_refresh"
-            android:text="Refresh"
+            android:text="@string/refresh"
             android:textAllCaps="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvErrorDesc" />
+            app:layout_constraintTop_toBottomOf="@+id/tvErrorDesc"
+            android:contentDescription="@string/refresh" />
     </android.support.constraint.ConstraintLayout>
 
 

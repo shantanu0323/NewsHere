@@ -16,7 +16,8 @@
             android:id="@+id/ivFlag"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:src="@drawable/india_in" />
+            android:src="@drawable/india_in"
+            android:contentDescription="@string/india" />
 
         <TextView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/tvCountry"
@@ -25,10 +26,10 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="5dp"
             android:fontFamily="@font/roboto_regular"
-            android:gravity="left"
-            android:text="TextView"
+            android:gravity="start"
+            android:text="@string/textview"
             android:textColor="@color/colorBackground"
-            android:textSize="14dp" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 </LinearLayout>

@@ -16,13 +16,14 @@
         android:id="@+id/ivFlag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@mipmap/worldwide" />
+        app:srcCompat="@mipmap/worldwide"
+        android:contentDescription="@string/flag" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="NewsHere"
+        android:text="@string/newshere"
         android:fontFamily="@font/roboto_regular"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -31,6 +32,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto_light"
-        android:text="World Wide news at your fingertips" />
+        android:text="@string/world_wide_news_at_your_fingertips" />
 
 </LinearLayout>

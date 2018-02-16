@@ -12,9 +12,9 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
@@ -37,7 +37,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -45,11 +44,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eftimoff.viewpagertransformers.DrawFromBackTransformer;
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
@@ -73,7 +70,6 @@ public class SearchActivity extends AppCompatActivity
 
     private static final String TAG = "SearchActivity";
     private static final String URL_KEY = "queryUrl";
-    private static Typeface ROBOTO_THIN = null;
     private static Typeface ROBOTO_LIGHT = null;
     private FrameLayout searchContainer, sortContainer;
     private ImageButton bSearchDone, bSearchCancel, bSortDone, bSortCancel;
@@ -92,7 +88,6 @@ public class SearchActivity extends AppCompatActivity
 
     private static final int NEWS_LOADER_ID = 1;
 
-    int cnt = 0;
     private String dateRange = "";
     private LinearLayout llPagerDots;
     private ImageView[] ivArrayDotsPager;
@@ -217,12 +212,16 @@ public class SearchActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 String sortValue = tvSort.getText().toString();
-                if (sortValue.equals("Relevancy")) {
-                    rbRelevancy.setChecked(true);
-                } else if (sortValue.equals("Popularity")) {
-                    rbPopularity.setChecked(true);
-                } else {
-                    rbPublishedAt.setChecked(true);
+                switch (sortValue) {
+                    case "Relevancy":
+                        rbRelevancy.setChecked(true);
+                        break;
+                    case "Popularity":
+                        rbPopularity.setChecked(true);
+                        break;
+                    default:
+                        rbPublishedAt.setChecked(true);
+                        break;
                 }
                 searchContainer.setVisibility(View.GONE);
                 sortContainer.setVisibility(View.VISIBLE);
@@ -235,12 +234,16 @@ public class SearchActivity extends AppCompatActivity
                 String sortValue = ((RadioButton) findViewById(sortRadioContainer.getCheckedRadioButtonId()))
                         .getText().toString();
                 tvSort.setText(sortValue);
-                if (sortValue.equals("Relevancy")) {
-                    sortPreference = "relevancy";
-                } else if (sortValue.equals("Popularity")) {
-                    sortPreference = "popularity";
-                } else {
-                    sortPreference = "publishedAt";
+                switch (sortValue) {
+                    case "Relevancy":
+                        sortPreference = "relevancy";
+                        break;
+                    case "Popularity":
+                        sortPreference = "popularity";
+                        break;
+                    default:
+                        sortPreference = "publishedAt";
+                        break;
                 }
                 currentPageNo = 1;
                 updatePageNoTheme();
@@ -354,7 +357,10 @@ public class SearchActivity extends AppCompatActivity
                 getSystemService(Context.CONNECTIVITY_SERVICE);
 
         // Get details on the currently active default data network
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        NetworkInfo networkInfo = null;
+        if (connMgr != null) {
+            networkInfo = connMgr.getActiveNetworkInfo();
+        }
 
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnected()) {
@@ -388,7 +394,7 @@ public class SearchActivity extends AppCompatActivity
         } else {
             avi.hide();
             loadingIndicator.setVisibility(View.GONE);
-            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with your internet connectivity");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText(R.string.no_conn_error_message);
             errorContainer.setVisibility(View.VISIBLE);
         }
     }
@@ -407,10 +413,10 @@ public class SearchActivity extends AppCompatActivity
         loadingIndicator.setVisibility(View.GONE);
 
         if (newsList == null) {
-            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("Couldn't reach servers at the moment");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText(R.string.retrieve_error_msg);
             errorContainer.setVisibility(View.VISIBLE);
         } else if (newsList.size() == 0) {
-            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("Sorry no results found !!!");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText(R.string.no_results_error_msg);
             errorContainer.setVisibility(View.VISIBLE);
         } else {
             errorContainer.setVisibility(View.GONE);
@@ -442,8 +448,8 @@ public class SearchActivity extends AppCompatActivity
                 @Override
                 public void onPageSelected(int position) {
                     getItem(0);
-                    for (int i = 0; i < ivArrayDotsPager.length; i++) {
-                        ivArrayDotsPager[i].setImageResource(R.drawable.unselected_dot);
+                    for (ImageView anIvArrayDotsPager : ivArrayDotsPager) {
+                        anIvArrayDotsPager.setImageResource(R.drawable.unselected_dot);
                     }
                     ivArrayDotsPager[position].setImageResource(R.drawable.selected_dot);
                 }
@@ -717,7 +723,7 @@ public class SearchActivity extends AppCompatActivity
             sortContainer.setVisibility(View.GONE);
         } else {
             TextView tvTitle = new TextView(this);
-            tvTitle.setText("Sure to exit ?");
+            tvTitle.setText(R.string.exit_message);
             tvTitle.setTypeface(ROBOTO_LIGHT);
             tvTitle.setTextColor(Color.BLACK);
             tvTitle.setTextSize(20f);
@@ -745,7 +751,7 @@ public class SearchActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -828,7 +834,6 @@ public class SearchActivity extends AppCompatActivity
 
     private void initFonts() {
         ROBOTO_LIGHT = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_light.ttf");
-        ROBOTO_THIN = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_thin.ttf");
     }
 
     @Override

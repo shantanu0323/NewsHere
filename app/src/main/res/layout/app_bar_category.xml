@@ -35,7 +35,7 @@
                 android:id="@+id/spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
+                android:layout_gravity="end"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/country_dropdown_bg"
@@ -55,43 +55,43 @@
                 android:id="@+id/business"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Business" />
+                android:text="@string/business" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/entertainment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Entertainment" />
+                android:text="@string/entertainment" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/general"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="General" />
+                android:text="@string/general" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/health"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Health" />
+                android:text="@string/health" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/science"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Science" />
+                android:text="@string/science" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/sports"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sports" />
+                android:text="@string/sports" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/technology"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Technology" />
+                android:text="@string/technology" />
 
         </android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>
@@ -123,7 +123,7 @@
             android:fontFamily="@font/roboto_regular"
             android:letterSpacing="1"
             android:padding="15dp"
-            android:text="Loading"
+            android:text="@string/loading"
             android:textColor="#fff"
             android:textSize="20sp" />
     </LinearLayout>

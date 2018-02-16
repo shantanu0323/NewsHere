@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
@@ -23,7 +24,6 @@ import android.text.SpannableString;
 import android.transition.Explode;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,7 +43,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eftimoff.viewpagertransformers.DrawFromBackTransformer;
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
@@ -64,16 +63,12 @@ public class HomeActivity extends AppCompatActivity
 
     private static final String TAG = "HomeActivity";
 
-    private static final String API_KEY = "d98a0731ab834d3cb605d8ac24dd7072";
     private static String COUNTRY_CODE = "in";
     private static String TOP_HEADLINES_URL = "https://newsapi.org/v2/top-headlines?apiKey=d98a0731ab834d3cb605d8ac24dd7072&country=";
-    private static final String SEARCH_URL = "https://newsapi.org/v2/everything?apiKey=d98a0731ab834d3cb605d8ac24dd7072&q=";
     private static final int MAXIMUM_PAGE = 20;
 
     private static final int NEWS_LOADER_ID = 1;
-    private NewsAdapter newsAdapter;
 
-    private static Typeface ROBOTO_THIN = null;
     private static Typeface ROBOTO_LIGHT = null;
     private static Typeface ROBOTO_REGULAR = null;
 
@@ -104,7 +99,6 @@ public class HomeActivity extends AppCompatActivity
 //    private final String BANNER_AD_UNIT_ID = "ca-app-pub-2383503724460446/8403933355";
 
     private InterstitialAd interstitialAd;
-    private boolean showAd = false;
     private final String TEST_DEVICE_ID = "1F5E03F3D435ACF9A110CAEC4896FCEB";
     // Testing purposes
     private final String INTERSTITAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
@@ -113,7 +107,6 @@ public class HomeActivity extends AppCompatActivity
     private Calendar calendar;
     private long currentTime, lastMinTime;
     private NewsHere newsHere;
-    private boolean skipMethod = false;
     private AVLoadingIndicatorView avi;
     private boolean introSliderLaunched = false;
 
@@ -127,19 +120,11 @@ public class HomeActivity extends AppCompatActivity
         if (!preferences.getBoolean("seenIntro", false))
             launchIntroSlider();
 
-        if (preferences.getInt("timesOpened", 0) == 4) {
-            launchRateDialog();
-            updateTimesOpened();
-        } else if (preferences.getInt("timesOpened", 0) < 4) {
-            updateTimesOpened();
-        }
-
         findViews();
         initFonts();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
-        TextView tvTitle = (TextView) toolbar.getChildAt(0);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -156,8 +141,6 @@ public class HomeActivity extends AppCompatActivity
         for (int i = 0; i < m.size(); i++) {
 
             MenuItem mi = m.getItem(i);
-
-            Typeface typeface = ROBOTO_LIGHT;
 
             SpannableString s = new SpannableString(mi.getTitle());
             s.setSpan(new CustomTypefaceSpan("", ROBOTO_LIGHT), 0, s.length(),
@@ -227,14 +210,13 @@ public class HomeActivity extends AppCompatActivity
 
     private void launchRateDialog() {
         TextView tvTitle = new TextView(this);
-        tvTitle.setText("Would you please like to spare a moment to rate this app?");
+        tvTitle.setText(R.string.rate_message);
         tvTitle.setTypeface(ROBOTO_REGULAR);
         tvTitle.setTextColor(Color.BLACK);
         tvTitle.setTextSize(20f);
         tvTitle.setPadding(50, 20, 20, 20);
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
         builder.setCustomTitle(tvTitle)
-//        builder.setTitle("Would you please like to spare a moment to rate this app?")
                 .setCancelable(false)
                 .setPositiveButton("Rate Now", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -289,7 +271,10 @@ public class HomeActivity extends AppCompatActivity
                 getSystemService(Context.CONNECTIVITY_SERVICE);
 
         // Get details on the currently active default data network
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        NetworkInfo networkInfo = null;
+        if (connMgr != null) {
+            networkInfo = connMgr.getActiveNetworkInfo();
+        }
 
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnected()) {
@@ -315,7 +300,7 @@ public class HomeActivity extends AppCompatActivity
             loadingIndicator.setVisibility(View.GONE);
             avi.hide();
 
-            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with your internet connectivity");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText(R.string.no_conn_error_message);
             errorContainer.setVisibility(View.VISIBLE);
         }
     }
@@ -374,7 +359,7 @@ public class HomeActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             TextView tvTitle = new TextView(this);
-            tvTitle.setText("Sure to exit ?");
+            tvTitle.setText(R.string.exit_message);
             tvTitle.setTypeface(ROBOTO_LIGHT);
             tvTitle.setTextColor(Color.BLACK);
             tvTitle.setTextSize(20f);
@@ -402,7 +387,7 @@ public class HomeActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -447,7 +432,6 @@ public class HomeActivity extends AppCompatActivity
 
     private void initFonts() {
         ROBOTO_LIGHT = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_light.ttf");
-        ROBOTO_THIN = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_thin.ttf");
         ROBOTO_REGULAR = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_regular.ttf");
     }
 
@@ -469,7 +453,7 @@ public class HomeActivity extends AppCompatActivity
 //        animatedCircleLoadingView.resetLoading();
 
         if (newsList == null) {
-            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("Couldn't reach servers at the moment");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText(R.string.retrieve_error_msg);
             errorContainer.setVisibility(View.VISIBLE);
         } else {
             errorContainer.setVisibility(View.GONE);
@@ -479,7 +463,7 @@ public class HomeActivity extends AppCompatActivity
             llPagerDots.setVisibility(View.VISIBLE);
         }
 
-        newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
+        NewsAdapter newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
         viewPager.setAdapter(newsAdapter);
         viewPager.setCurrentItem(savedInstanceIndex);
 
@@ -496,8 +480,8 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onPageSelected(int position) {
                 getItem(0);
-                for (int i = 0; i < ivArrayDotsPager.length; i++) {
-                    ivArrayDotsPager[i].setImageResource(R.drawable.unselected_dot);
+                for (ImageView anIvArrayDotsPager : ivArrayDotsPager) {
+                    anIvArrayDotsPager.setImageResource(R.drawable.unselected_dot);
                 }
                 ivArrayDotsPager[position].setImageResource(R.drawable.selected_dot);
             }
@@ -590,6 +574,14 @@ public class HomeActivity extends AppCompatActivity
                     }
                 })
                 .build();
+
+        SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
+        if (preferences.getInt("timesOpened", 0) == 4) {
+            launchRateDialog();
+            updateTimesOpened();
+        } else if (preferences.getInt("timesOpened", 0) < 4) {
+            updateTimesOpened();
+        }
 
     }
 

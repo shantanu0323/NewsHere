@@ -73,7 +73,6 @@ public class CategoryActivity extends AppCompatActivity
 
     private Spinner spinner;
 
-    private static Typeface ROBOTO_THIN = null;
     private static Typeface ROBOTO_LIGHT = null;
 
     private LinearLayout loadingIndicator;
@@ -220,7 +219,10 @@ public class CategoryActivity extends AppCompatActivity
                 getSystemService(Context.CONNECTIVITY_SERVICE);
 
         // Get details on the currently active default data network
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        NetworkInfo networkInfo = null;
+        if (connMgr != null) {
+            networkInfo = connMgr.getActiveNetworkInfo();
+        }
 
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnected()) {
@@ -247,7 +249,7 @@ public class CategoryActivity extends AppCompatActivity
         } else {
             loadingIndicator.setVisibility(View.GONE);
             avi.hide();
-            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("There seems to be an issue with your internet connectivity");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText(R.string.no_conn_error_message);
             errorContainer.setVisibility(View.VISIBLE);
         }
     }
@@ -323,7 +325,7 @@ public class CategoryActivity extends AppCompatActivity
         }
 
         if (newsList == null) {
-            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("Couldn't reach servers at the moment");
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText(R.string.retrieve_error_msg);
             errorContainer.setVisibility(View.VISIBLE);
         } else {
             errorContainer.setVisibility(View.GONE);
@@ -349,8 +351,8 @@ public class CategoryActivity extends AppCompatActivity
             @Override
             public void onPageSelected(int position) {
                 getItem(0);
-                for (int i = 0; i < ivArrayDotsPager.length; i++) {
-                    ivArrayDotsPager[i].setImageResource(R.drawable.unselected_dot);
+                for (ImageView anIvArrayDotsPager : ivArrayDotsPager) {
+                    anIvArrayDotsPager.setImageResource(R.drawable.unselected_dot);
                 }
                 ivArrayDotsPager[position].setImageResource(R.drawable.selected_dot);
             }
@@ -450,7 +452,6 @@ public class CategoryActivity extends AppCompatActivity
 
     private void initFonts() {
         ROBOTO_LIGHT = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_light.ttf");
-        ROBOTO_THIN = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_thin.ttf");
     }
 
     @Override
@@ -461,7 +462,7 @@ public class CategoryActivity extends AppCompatActivity
         } else {
             Log.e(TAG, "onBackPressed : CATEGORY finish()");
             TextView tvTitle = new TextView(this);
-            tvTitle.setText("Sure to exit ?");
+            tvTitle.setText(R.string.exit_message);
             tvTitle.setTypeface(ROBOTO_LIGHT);
             tvTitle.setTextColor(Color.BLACK);
             tvTitle.setTextSize(20f);

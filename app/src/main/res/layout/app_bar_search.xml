@@ -24,12 +24,12 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="left"
+                android:layout_gravity="start"
                 android:fontFamily="@font/roboto_regular"
                 android:gravity="center_vertical"
-                android:text="Search"
+                android:text="@string/search"
                 android:textColor="#fff"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
         </android.support.v7.widget.Toolbar>
 
@@ -61,7 +61,7 @@
             android:fontFamily="@font/roboto_regular"
             android:letterSpacing="1"
             android:padding="15dp"
-            android:text="Loading"
+            android:text="@string/loading"
             android:textColor="#fff"
             android:textSize="20sp" />
     </LinearLayout>
