@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="350dp"
         android:scaleType="centerInside"
-        android:src="@drawable/intro_category"
+        android:src="@drawable/intro_multilingual"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
@@ -40,7 +40,7 @@
             android:gravity="center"
             android:paddingLeft="40dp"
             android:paddingRight="40dp"
-            android:text="@string/title_slide3"
+            android:text="@string/title_slide_5"
             android:textColor="@android:color/white"
             android:textSize="@dimen/slide_title"
             android:textStyle="bold" />
@@ -52,7 +52,7 @@
             android:fontFamily="@font/roboto_regular"
             android:paddingLeft="@dimen/desc_padding"
             android:paddingRight="@dimen/desc_padding"
-            android:text="@string/desc_slide_3"
+            android:text="@string/desc_slide_5"
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="@dimen/slide_desc" />

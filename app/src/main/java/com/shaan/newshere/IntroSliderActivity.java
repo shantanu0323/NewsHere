@@ -5,8 +5,6 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
@@ -49,14 +47,18 @@ public class IntroSliderActivity extends Activity {
         layouts = new int[]{
                 R.layout.slide1,
                 R.layout.slide2,
-                R.layout.slide3};
+                R.layout.slide3,
+                R.layout.slide4,
+                R.layout.slide5};
 
         // adding bottom dots
         addBottomDots(0);
         mColorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(),
                 getResources().getColor(R.color.bg_screen1),
                 getResources().getColor(R.color.bg_screen2),
-                getResources().getColor(R.color.bg_screen3));
+                getResources().getColor(R.color.bg_screen3),
+                getResources().getColor(R.color.bg_screen4),
+                getResources().getColor(R.color.bg_screen5));
 
         mColorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
@@ -65,7 +67,7 @@ public class IntroSliderActivity extends Activity {
                 viewPager.setBackgroundColor((Integer)animator.getAnimatedValue());
             }
         });
-        mColorAnimation.setDuration((3 - 1) * 10000000000L);
+        mColorAnimation.setDuration((5 - 1) * 10000000000L);
 
         viewPagerAdapter = new ViewPagerAdapter();
         viewPager.setAdapter(viewPagerAdapter);

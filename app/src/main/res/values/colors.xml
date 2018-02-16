@@ -12,6 +12,9 @@
     <color name="bg_screen1">#15afe6</color>
     <color name="bg_screen2">#74a443</color>
     <color name="bg_screen3">#ffbb00</color>
+    <color name="bg_screen4">#ff2200</color>
+    <color name="bg_screen5">#877bef</color>
+
 
     <color name="dot_active">#000000</color>
     <color name="dot_inactive">#dddddd</color>

@@ -423,11 +423,6 @@ public class HomeActivity extends AppCompatActivity
             newsHere.setTargetActivity("search");
             startActivity(intent, compat.toBundle());
 //            finish();
-        } else if (id == R.id.nav_share) {
-            Intent intent = new Intent(getApplicationContext(), IntroSliderActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

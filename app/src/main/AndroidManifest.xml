@@ -19,6 +19,7 @@
         <activity
             android:name=".HomeActivity"
             android:label="NewsHere"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,16 +30,17 @@
         <activity
             android:name=".CategoryActivity"
             android:label="@string/title_activity_category"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SearchActivity"
             android:label="@string/title_activity_search"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".IntroActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".IntroSliderActivity"></activity>
+            android:name=".IntroSliderActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

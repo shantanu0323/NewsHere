@@ -1,28 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="50dp">
+
+
+    <ImageView
+        android:id="@+id/slide_image"
+        android:layout_width="wrap_content"
+        android:layout_height="350dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/intro_top"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/slide_image"
-            android:layout_width="@dimen/img_width"
-            android:layout_height="@dimen/img_height"
-            android:src="@drawable/ic_slide2" />
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="15dp"
+        app:layout_constraintBottom_toTopOf="@id/slide_image"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/title_slide2"
+            android:layout_marginBottom="15dp"
+            android:fontFamily="@font/roboto_regular"
+            android:gravity="center"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:text="@string/title_slide_2"
             android:textColor="@android:color/white"
             android:textSize="@dimen/slide_title"
             android:textStyle="bold" />
@@ -31,15 +49,14 @@
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:fontFamily="@font/roboto_regular"
             android:paddingLeft="@dimen/desc_padding"
             android:paddingRight="@dimen/desc_padding"
             android:text="@string/desc_slide_2"
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="@dimen/slide_desc" />
-
     </LinearLayout>
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
 

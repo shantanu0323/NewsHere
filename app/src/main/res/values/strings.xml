@@ -20,9 +20,13 @@
     <string name="start">Start</string>
     <string name="title_slide1">NewsHere</string>
     <string name="desc_slide1">Worldwide headlines at the tip of your fingers</string>
-    <string name="title_slide2">Battery status update</string>
-    <string name="desc_slide_2">It will keep you updated on battery charging status through notification and home screen widget</string>
-    <string name="title_slide3">Alert on 100%</string>
-    <string name="desc_slide_3">It will alert you when battery reaches 100%</string>
+    <string name="title_slide_4">Search the topic you want to read</string>
+    <string name="desc_slide_4">Provides the option to sort the results and filter them through the dates of publication</string>
+    <string name="title_slide3">Categories Headlines</string>
+    <string name="desc_slide_3">Allows you to view headlines from your favorite category</string>
     <string name="next">Next</string>
+    <string name="title_slide_5">Offers Multilingual Support</string>
+    <string name="desc_slide_5">Now view the news articles from all over the world in their own native language</string>
+    <string name="title_slide_2">Current News Headlines</string>
+    <string name="desc_slide_2">So that you never miss any updates on what\'s going around</string>
 </resources>

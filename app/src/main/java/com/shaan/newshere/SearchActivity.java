@@ -409,164 +409,173 @@ public class SearchActivity extends AppCompatActivity
         if (newsList == null) {
             ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("Couldn't reach servers at the moment");
             errorContainer.setVisibility(View.VISIBLE);
+        } else if (newsList.size() == 0) {
+            ((TextView) errorContainer.findViewById(R.id.tvErrorDesc)).setText("Sorry no results found !!!");
+            errorContainer.setVisibility(View.VISIBLE);
         } else {
             errorContainer.setVisibility(View.GONE);
             viewPager.setVisibility(View.VISIBLE);
             bPrev.setVisibility(View.VISIBLE);
             bNext.setVisibility(View.VISIBLE);
             llPagerDots.setVisibility(View.VISIBLE);
+
+
+            newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
+            try {
+                viewPager.setAdapter(newsAdapter);
+                viewPager.setCurrentItem(savedInstanceIndex);
+            } catch (Exception e) {
+                e.printStackTrace();
+                errorContainer.setVisibility(View.VISIBLE);
+                return;
+            }
+
+            setupPagerIndidcatorDots();
+            ivArrayDotsPager[0].setImageResource(R.drawable.selected_dot);
+
+            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    getItem(0);
+                    for (int i = 0; i < ivArrayDotsPager.length; i++) {
+                        ivArrayDotsPager[i].setImageResource(R.drawable.unselected_dot);
+                    }
+                    ivArrayDotsPager[position].setImageResource(R.drawable.selected_dot);
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
+            viewPager.setPageTransformer(false, new DrawFromBackTransformer());
+
+
+            bPrev.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewPager.setCurrentItem(getItem(-1), true);
+                }
+            });
+            bPrev.setVisibility(View.VISIBLE);
+
+            bNext.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewPager.setCurrentItem(getItem(+1), true);
+                }
+            });
+            bNext.setVisibility(View.VISIBLE);
+
+            int totalResults = newsList.get(0).getTotalResults();
+
+            final int maxPage = totalResults / MAXIMUM_PAGE + 1;
+            String pageText = "Page " + currentPageNo + " of " + maxPage;
+            tvPages.setText(pageText);
+            llAction.setVisibility(View.VISIBLE);
+
+
+            bNextPage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (currentPageNo < maxPage) {
+                        currentPageNo++;
+                        bPrevPage.setEnabled(true);
+                        bPrevPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                                (getApplicationContext(), android.R.color.white)));
+                        bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+                        initiateLoader();
+                    }
+                    if (currentPageNo == maxPage) {
+                        bNextPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                                (getApplicationContext(), R.color.imageTintColor)));
+                        bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+                        bNextPage.setEnabled(false);
+                    } else {
+                        bNextPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
+                                (getApplicationContext(), android.R.color.white)));
+                        bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
+                        bNextPage.setEnabled(true);
+                    }
+                    savedInstanceIndex = 0;
+                    updatePageNoTheme();
+
+                }
+            });
+
+            new ShowcaseView.Builder(SearchActivity.this)
+                    .setTarget(new ViewTarget(bSort))
+                    .singleShot(300)
+                    .blockAllTouches()
+                    .setContentTitle("Sort")
+                    .setStyle(R.style.CustomShowcaseTheme2)
+                    .setContentText("According to Relevancy, Popularity or Publishing Date")
+                    .setShowcaseEventListener(new OnShowcaseEventListener() {
+
+                        @Override
+                        public void onShowcaseViewHide(ShowcaseView showcaseView) {
+                            new ShowcaseView.Builder(SearchActivity.this)
+                                    .setTarget(new ViewTarget(bFilterDate))
+                                    .setContentTitle("Filter Dates")
+                                    .singleShot(330)
+                                    .setStyle(R.style.CustomShowcaseTheme2)
+                                    .blockAllTouches()
+                                    .setContentText("Choose the date range from which you want to see the news articles")
+                                    .setShowcaseEventListener(new OnShowcaseEventListener() {
+
+                                        @Override
+                                        public void onShowcaseViewHide(ShowcaseView showcaseView) {
+                                            new ShowcaseView.Builder(SearchActivity.this)
+                                                    .setTarget(new ViewTarget(bNextPage))
+                                                    .setContentTitle("Move to the Next page")
+                                                    .singleShot(360)
+                                                    .blockAllTouches()
+                                                    .setStyle(R.style.CustomShowcaseTheme2)
+                                                    .setContentText("Allows you to view the next 20 articles for the given search query")
+                                                    .build();
+
+                                        }
+
+                                        @Override
+                                        public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+                                        }
+
+                                        @Override
+                                        public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+                                        }
+
+                                        @Override
+                                        public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+
+                                        }
+                                    })
+                                    .build();
+                        }
+
+                        @Override
+                        public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+                        }
+
+                        @Override
+                        public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+                        }
+
+                        @Override
+                        public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+
+                        }
+                    })
+                    .build();
         }
-
-        newsAdapter = new NewsAdapter(getSupportFragmentManager(), newsList);
-        viewPager.setAdapter(newsAdapter);
-        viewPager.setCurrentItem(savedInstanceIndex);
-
-        setupPagerIndidcatorDots();
-        ivArrayDotsPager[0].setImageResource(R.drawable.selected_dot);
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                getItem(0);
-                for (int i = 0; i < ivArrayDotsPager.length; i++) {
-                    ivArrayDotsPager[i].setImageResource(R.drawable.unselected_dot);
-                }
-                ivArrayDotsPager[position].setImageResource(R.drawable.selected_dot);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-        viewPager.setPageTransformer(false, new DrawFromBackTransformer());
-
-
-        bPrev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewPager.setCurrentItem(getItem(-1), true);
-            }
-        });
-        bPrev.setVisibility(View.VISIBLE);
-
-        bNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewPager.setCurrentItem(getItem(+1), true);
-            }
-        });
-        bNext.setVisibility(View.VISIBLE);
-
-        int totalResults = newsList.get(0).getTotalResults();
-
-        final int maxPage = totalResults / MAXIMUM_PAGE + 1;
-        String pageText = "Page " + currentPageNo + " of " + maxPage;
-        tvPages.setText(pageText);
-        llAction.setVisibility(View.VISIBLE);
-
-
-        bNextPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentPageNo < maxPage) {
-                    currentPageNo++;
-                    bPrevPage.setEnabled(true);
-                    bPrevPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
-                            (getApplicationContext(), android.R.color.white)));
-                    bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
-                    initiateLoader();
-                }
-                if (currentPageNo == maxPage) {
-                    bNextPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
-                            (getApplicationContext(), R.color.imageTintColor)));
-                    bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
-                    bNextPage.setEnabled(false);
-                } else {
-                    bNextPage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor
-                            (getApplicationContext(), android.R.color.white)));
-                    bNextPage.setImageTintMode(PorterDuff.Mode.MULTIPLY);
-                    bNextPage.setEnabled(true);
-                }
-                savedInstanceIndex = 0;
-                updatePageNoTheme();
-
-            }
-        });
-
-        new ShowcaseView.Builder(SearchActivity.this)
-                .setTarget(new ViewTarget(bSort))
-                .singleShot(300)
-                .blockAllTouches()
-                .setContentTitle("Sort")
-                .setStyle(R.style.CustomShowcaseTheme2)
-                .setContentText("According to Relevancy, Popularity or Publishing Date")
-                .setShowcaseEventListener(new OnShowcaseEventListener() {
-
-                    @Override
-                    public void onShowcaseViewHide(ShowcaseView showcaseView) {
-                        new ShowcaseView.Builder(SearchActivity.this)
-                                .setTarget(new ViewTarget(bFilterDate))
-                                .setContentTitle("Filter Dates")
-                                .singleShot(330)
-                                .setStyle(R.style.CustomShowcaseTheme2)
-                                .blockAllTouches()
-                                .setContentText("Choose the date range from which you want to see the news articles")
-                                .setShowcaseEventListener(new OnShowcaseEventListener() {
-
-                                    @Override
-                                    public void onShowcaseViewHide(ShowcaseView showcaseView) {
-                                        new ShowcaseView.Builder(SearchActivity.this)
-                                                .setTarget(new ViewTarget(bNextPage))
-                                                .setContentTitle("Move to the Next page")
-                                                .singleShot(360)
-                                                .blockAllTouches()
-                                                .setStyle(R.style.CustomShowcaseTheme2)
-                                                .setContentText("Allows you to view the next 20 articles for the given search query")
-                                                .build();
-
-                                    }
-
-                                    @Override
-                                    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
-
-                                    }
-
-                                    @Override
-                                    public void onShowcaseViewShow(ShowcaseView showcaseView) {
-
-                                    }
-
-                                    @Override
-                                    public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
-
-                                    }
-                                })
-                                .build();
-                    }
-
-                    @Override
-                    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
-
-                    }
-
-                    @Override
-                    public void onShowcaseViewShow(ShowcaseView showcaseView) {
-
-                    }
-
-                    @Override
-                    public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
-
-                    }
-                })
-                .build();
-
     }
 
     @Override
@@ -753,10 +762,6 @@ public class SearchActivity extends AppCompatActivity
             startActivity(intent, compat.toBundle());
         } else if (id == R.id.nav_search) {
             // Do nothing
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -775,6 +780,7 @@ public class SearchActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_search) {
             sortContainer.setVisibility(View.GONE);
+            errorContainer.setVisibility(View.GONE);
             searchContainer.setVisibility(View.VISIBLE);
         }
 

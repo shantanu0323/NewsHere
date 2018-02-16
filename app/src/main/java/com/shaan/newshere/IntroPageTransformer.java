@@ -50,6 +50,15 @@ public class IntroPageTransformer implements ViewPager.PageTransformer {
                 image.setScaleY(1f - 0.6f * absPosition);
                 image.setTranslationY(pageWidthTimesPosition / 2f);
                 image.setTranslationX(-pageWidthTimesPosition / 2f);
+                image.setAlpha(1.0f - absPosition);
+
+                title.setTranslationY(pageWidthTimesPosition / 2f);
+                title.setTranslationX(-pageWidthTimesPosition / 1f);
+                title.setAlpha(1.0f - absPosition);
+
+                description.setTranslationY(-pageWidthTimesPosition / 2f);
+                description.setTranslationX(-pageWidthTimesPosition / 1f);
+                description.setAlpha(1.0f - absPosition);
             } else {
 
 
@@ -59,9 +68,15 @@ public class IntroPageTransformer implements ViewPager.PageTransformer {
                 description.setTranslationY(-pageWidthTimesPosition / 2f);
                 description.setAlpha(1.0f - absPosition);
 
+                title.setTranslationY(-pageWidthTimesPosition / 1f);
+                title.setTranslationX(-pageWidthTimesPosition / 1f);
+                title.setAlpha(1.0f - absPosition);
 
+//                image.setAlpha(1.0f - absPosition);
+//                image.setTranslationX(-pageWidthTimesPosition * 1.5f);
+                image.setTranslationY(pageWidthTimesPosition / 2f);
+                image.setTranslationX(-pageWidthTimesPosition / 1f);
                 image.setAlpha(1.0f - absPosition);
-                image.setTranslationX(-pageWidthTimesPosition * 1.5f);
 
             }
             // Finally, it can be useful to know the direction
