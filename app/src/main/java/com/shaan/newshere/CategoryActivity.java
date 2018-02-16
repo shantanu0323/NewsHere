@@ -197,18 +197,20 @@ public class CategoryActivity extends AppCompatActivity
         });
 
         MobileAds.initialize(this, BANNER_AD_UNIT_ID);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR)//.addTestDevice(TEST_DEVICE_ID)
+                .build();
         adView.loadAd(adRequest);
 
 
         interstitialAd = new InterstitialAd(this);
         interstitialAd.setAdUnitId(INTERSTITAL_AD_UNIT_ID);
-        interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
+        interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR)//.addTestDevice(TEST_DEVICE_ID)
+                .build());
         interstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
-                interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(TEST_DEVICE_ID).addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
+                interstitialAd.loadAd(new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR)//.addTestDevice(TEST_DEVICE_ID)
+                        .build());
             }
         });
     }
