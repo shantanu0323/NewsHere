@@ -16,4 +16,13 @@
     <string name="categories">Categories</string>
     <string name="title_activity_search">SearchActivity</string>
 
+    <string name="skip">Skip</string>
+    <string name="start">Start</string>
+    <string name="title_slide1">NewsHere</string>
+    <string name="desc_slide1">Worldwide headlines at the tip of your fingers</string>
+    <string name="title_slide2">Battery status update</string>
+    <string name="desc_slide_2">It will keep you updated on battery charging status through notification and home screen widget</string>
+    <string name="title_slide3">Alert on 100%</string>
+    <string name="desc_slide_3">It will alert you when battery reaches 100%</string>
+    <string name="next">Next</string>
 </resources>

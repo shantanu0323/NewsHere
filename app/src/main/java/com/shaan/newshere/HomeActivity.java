@@ -1,10 +1,12 @@
 package com.shaan.newshere;
 
-import android.app.ActivityOptions;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Build;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
@@ -21,6 +23,7 @@ import android.text.SpannableString;
 import android.transition.Explode;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,15 +41,13 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.eftimoff.viewpagertransformers.DrawFromBackTransformer;
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
-import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -55,7 +56,6 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.wang.avi.AVLoadingIndicatorView;
 
-import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.List;
 
@@ -75,6 +75,7 @@ public class HomeActivity extends AppCompatActivity
 
     private static Typeface ROBOTO_THIN = null;
     private static Typeface ROBOTO_LIGHT = null;
+    private static Typeface ROBOTO_REGULAR = null;
 
     String[] countryNames = {"India", "Australia", "Canada", "China", "France", "Germany", "Italy", "Japan"};
     String[] countryCodes = {"in", "au", "ca", "cn", "fr", "de", "it", "jp"};
@@ -114,12 +115,24 @@ public class HomeActivity extends AppCompatActivity
     private NewsHere newsHere;
     private boolean skipMethod = false;
     private AVLoadingIndicatorView avi;
+    private boolean introSliderLaunched = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupWindowAnimations();
         setContentView(R.layout.activity_home);
+
+        SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
+        if (!preferences.getBoolean("seenIntro", false))
+            launchIntroSlider();
+
+        if (preferences.getInt("timesOpened", 0) == 4) {
+            launchRateDialog();
+            updateTimesOpened();
+        } else if (preferences.getInt("timesOpened", 0) < 4) {
+            updateTimesOpened();
+        }
 
         findViews();
         initFonts();
@@ -210,6 +223,64 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+    }
+
+    private void launchRateDialog() {
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText("Would you please like to spare a moment to rate this app?");
+        tvTitle.setTypeface(ROBOTO_REGULAR);
+        tvTitle.setTextColor(Color.BLACK);
+        tvTitle.setTextSize(20f);
+        tvTitle.setPadding(50, 20, 20, 20);
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
+        builder.setCustomTitle(tvTitle)
+//        builder.setTitle("Would you please like to spare a moment to rate this app?")
+                .setCancelable(false)
+                .setPositiveButton("Rate Now", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        rateApp();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .setNeutralButton("Remind Me Later", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putInt("timesOpened", 0);
+                        editor.apply();
+                    }
+                });
+        AlertDialog dialog = builder.show();
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+        positiveButton.setTextColor(getResources().getColor(R.color.colorAccent2));
+        positiveButton.setTypeface(ROBOTO_REGULAR);
+        positiveButton.setAllCaps(false);
+        negativeButton.setTextColor(getResources().getColor(R.color.colorAccent2));
+        negativeButton.setTypeface(ROBOTO_REGULAR);
+        negativeButton.setAllCaps(false);
+        neutralButton.setTextColor(getResources().getColor(R.color.colorAccent2));
+        neutralButton.setTypeface(ROBOTO_REGULAR);
+        neutralButton.setAllCaps(false);
+    }
+
+    private void launchIntroSlider() {
+        SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("seenIntro", true);
+        editor.apply();
+        startActivity(new Intent(getApplicationContext(), IntroSliderActivity.class));
+        introSliderLaunched = true;
+        finish();
+    }
+
+    private void updateTimesOpened() {
+        SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("timesOpened", preferences.getInt("timesOpened", 0) + 1);
+        editor.apply();
     }
 
     private void initiateLoader() {
@@ -305,7 +376,7 @@ public class HomeActivity extends AppCompatActivity
             TextView tvTitle = new TextView(this);
             tvTitle.setText("Sure to exit ?");
             tvTitle.setTypeface(ROBOTO_LIGHT);
-            tvTitle.setTextColor(Color.WHITE);
+            tvTitle.setTextColor(Color.BLACK);
             tvTitle.setTextSize(20f);
             tvTitle.setPadding(50, 20, 20, 20);
             AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
@@ -353,7 +424,7 @@ public class HomeActivity extends AppCompatActivity
             startActivity(intent, compat.toBundle());
 //            finish();
         } else if (id == R.id.nav_share) {
-            Intent intent = new Intent(getApplicationContext(), IntroActivity.class);
+            Intent intent = new Intent(getApplicationContext(), IntroSliderActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_send) {
 
@@ -382,6 +453,7 @@ public class HomeActivity extends AppCompatActivity
     private void initFonts() {
         ROBOTO_LIGHT = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_light.ttf");
         ROBOTO_THIN = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_thin.ttf");
+        ROBOTO_REGULAR = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/roboto_regular.ttf");
     }
 
     @Override
@@ -531,6 +603,29 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+    public void rateApp() {
+        try {
+            Intent rateIntent = rateIntentForUrl("market://details");
+            startActivity(rateIntent);
+        } catch (ActivityNotFoundException e) {
+            Intent rateIntent = rateIntentForUrl("https://play.google.com/store/apps/details");
+            startActivity(rateIntent);
+        }
+    }
+
+    private Intent rateIntentForUrl(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("%s?id=%s", url, getPackageName())));
+        int flags = Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_MULTIPLE_TASK;
+        if (Build.VERSION.SDK_INT >= 21) {
+            flags |= Intent.FLAG_ACTIVITY_NEW_DOCUMENT;
+        } else {
+            //noinspection deprecation
+            flags |= Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET;
+        }
+        intent.addFlags(flags);
+        return intent;
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -545,7 +640,7 @@ public class HomeActivity extends AppCompatActivity
         currentTime = calendar.getTimeInMillis();
         Log.e(TAG, "onResume: shouldExit = " + newsHere.isShouldExit() +
                 " : isExiting = " + newsHere.isExiting());
-        if (!newsHere.isShouldExit() && !newsHere.isExiting()) {
+        if (!newsHere.isShouldExit() && !newsHere.isExiting() && !introSliderLaunched) {
             if (interstitialAd.isLoaded() && (currentTime - lastMinTime > 1000 * 30)) {
                 interstitialAd.show();
                 lastMinTime = currentTime;
@@ -553,6 +648,7 @@ public class HomeActivity extends AppCompatActivity
             }
         } else {
             newsHere.setExiting(false);
+            introSliderLaunched = false;
         }
     }
 

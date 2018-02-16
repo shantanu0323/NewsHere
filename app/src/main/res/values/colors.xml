@@ -8,4 +8,11 @@
     <color name="imageTintColor">#333</color>
     <color name="colorShadow">#c81f272d</color>
     <color name="colorBlue">#15AFE6</color>
+
+    <color name="bg_screen1">#15afe6</color>
+    <color name="bg_screen2">#74a443</color>
+    <color name="bg_screen3">#ffbb00</color>
+
+    <color name="dot_active">#000000</color>
+    <color name="dot_inactive">#dddddd</color>
 </resources>

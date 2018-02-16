@@ -11,10 +11,11 @@
         android:allowBackup="true"
         android:icon="@mipmap/worldwide"
         android:label="NewsHere"
-        tools:replace="label"  android:largeHeap="true"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:largeHeap="true"
+        android:roundIcon="@mipmap/worldwide"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="label">
         <activity
             android:name=".HomeActivity"
             android:label="NewsHere"
@@ -37,6 +38,7 @@
         <activity
             android:name=".IntroActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".IntroSliderActivity"></activity>
     </application>
 
 </manifest>

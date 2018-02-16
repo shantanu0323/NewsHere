@@ -29,15 +29,29 @@
             android:layout_gravity="bottom"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_light"
                 android:gravity="center"
-                android:padding="5dp"
-                android:text="Powered by newsapi.org"
-                android:textColor="#ccc"
-                android:textSize="10sp" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="8dp"
+                    android:src="@mipmap/dev_logo"
+                    android:tint="#ddd" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_light"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Powered by newsapi.org"
+                    android:textColor="#ccc"
+                    android:textSize="10sp" />
+            </LinearLayout>
 
             <com.google.android.gms.ads.AdView xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/adView"

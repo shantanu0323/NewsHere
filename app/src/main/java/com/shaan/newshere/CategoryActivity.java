@@ -468,7 +468,7 @@ public class CategoryActivity extends AppCompatActivity
             TextView tvTitle = new TextView(this);
             tvTitle.setText("Sure to exit ?");
             tvTitle.setTypeface(ROBOTO_LIGHT);
-            tvTitle.setTextColor(Color.WHITE);
+            tvTitle.setTextColor(Color.BLACK);
             tvTitle.setTextSize(20f);
             tvTitle.setPadding(50, 20, 20, 20);
             AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
