@@ -189,6 +189,8 @@ public class SearchActivity extends AppCompatActivity
                     tvTitle.setText(query);
                     queryText = query.toLowerCase();
                     searchContainer.setVisibility(View.GONE);
+                    setInitialDates();
+                    currentPageNo = 1;
                     initiateLoader();
                 } else {
                     etQuery.setErrorEnabled(true);
@@ -247,6 +249,7 @@ public class SearchActivity extends AppCompatActivity
                 }
                 currentPageNo = 1;
                 updatePageNoTheme();
+                currentPageNo = 1;
                 initiateLoader();
                 sortContainer.setVisibility(View.GONE);
             }
