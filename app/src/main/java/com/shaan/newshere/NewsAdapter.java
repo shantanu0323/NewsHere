@@ -32,6 +32,7 @@ public class NewsAdapter extends FragmentStatePagerAdapter {
         Bundle bundle = new Bundle();
         bundle.putInt("count", position + 1);
         try {
+            Log.d("DEBUG", newsList.toString());
             bundle.putString("author", newsList.get(position).getAuthor());
             bundle.putString("title", newsList.get(position).getTitle());
             bundle.putString("description", newsList.get(position).getDescription());

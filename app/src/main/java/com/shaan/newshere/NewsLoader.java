@@ -40,9 +40,12 @@ class NewsLoader extends AsyncTaskLoader<List<News>> {
         List<News> newsList = null;
         try {
             newsList = QueryUtils.fetchNewsData(queryUrl);
+            Log.d("NEWSLIST", newsList.toString());
         } catch (IOException e) {
             e.printStackTrace();
             Log.e(TAG, "loadInBackground: PROBLEM FETCHING DATA : ", e);
+        } catch (NullPointerException e) {
+            Log.e("NoData", "newsList is empty");
         }
         return newsList;
     }

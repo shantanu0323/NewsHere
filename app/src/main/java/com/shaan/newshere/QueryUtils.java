@@ -1,7 +1,16 @@
 package com.shaan.newshere;
 
+import android.app.DownloadManager;
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,20 +34,70 @@ import java.util.List;
 
 public final class QueryUtils {
     private static final String TAG = "QueryUtils";
+    private static RequestQueue rQueue;
 
     private QueryUtils() {
+
+    }
+
+    public static List<News> dupfetchNewsData(String requestUrl, Context ctx) throws IOException {
+        final String url = "https://newshere-interface.herokuapp.com/";
+//        final String url = "https://reqres.in/api/users/2";
+//        final String url = "http://127.0.0.1:5000/";
+        rQueue = Volley.newRequestQueue(ctx);
+        JSONObject body = new JSONObject();
+        try {
+            //input your API parameters¢
+            body.put("url",requestUrl);
+        } catch (JSONException e) {
+            Log.e("DEBUG_CHECK", "fetchNewsData: FAILED TO PUT VALUE");
+            e.printStackTrace();
+        }
+        JsonObjectRequest request = new JsonObjectRequest(
+//                Request.Method.GET,
+                url,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("DEBUG_CHECK", "onResponse: "+ response.toString());
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        try {
+                            Log.e("DEBUG_CHECK", "onErrorResponse: ????????" + (error == null) );
+                            String responseBody = new String(error.networkResponse.data, "utf-8");
+                            Log.d("DEBUG_CHECK", "onErrorResponse: "+responseBody);
+                            Log.d("DEBUG_CHECK", "onErrorResponse: STATUS -> " + error.networkResponse.statusCode);
+//                            JSONObject data = new JSONObject(responseBody);
+//                            JSONArray errors = data.getJSONArray("errors");
+//                            JSONObject jsonMessage = errors.getJSONObject(0);
+//                            String message = jsonMessage.getString("message");
+//                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+                            Log.e("DEBUG_CHECK", "onErrorResponse: " + e.getMessage());
+                        }
+                    }
+                });
+//        parseResponse();
+        rQueue.add(request);
+        return null;
     }
 
     public static List<News> fetchNewsData(String requestUrl) throws IOException {
 //        Log.i(TAG, "fetchNewsData: CALLED");
         // Create URL object
-        URL url = createUrl(requestUrl);
+        URL url = createUrl("https://newshere-interface.herokuapp.com/");
 
         // Perform HTTP request to the URL and receive a JSON response back
         String jsonResponse = null;
         try {
-            jsonResponse = makeHttpRequest(url);
+            jsonResponse = makeHttpRequest(url, requestUrl);
+            Log.i(TAG, "URL: "+ requestUrl);
             Log.i(TAG, "fetchNewsData: JSON RESPONSE FETCHED");
+            Log.i(TAG,"JSON_RESPONSE: " + jsonResponse);
         } catch (IOException e) {
             Log.e(TAG, "Problem making the HTTP request.");
         }
@@ -60,7 +120,7 @@ public final class QueryUtils {
         return url;
     }
 
-    private static String makeHttpRequest(URL url) throws IOException {
+    private static String makeHttpRequest(URL url, String requestUrl) throws IOException {
 //        Log.i(TAG, "makeHttpRequest: CALLED");
         String jsonResponse = "";
 
@@ -76,18 +136,39 @@ public final class QueryUtils {
             urlConnection.setReadTimeout(15000 /* milliseconds */);
             urlConnection.setConnectTimeout(15000 /* milliseconds */);
             urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestProperty("Content-Type", "application/text; utf-8");
+            urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection.setDoOutput(true);
+            try(OutputStream os = urlConnection.getOutputStream()) {
+                byte[] input = requestUrl.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            } catch (Exception e) {
+                Log.e("DEBUG_CHECK", "makeHttpRequest: OutputStream ERROR -> " + e);
+            }
             urlConnection.connect();
 
             // If the request was successful (response code 200),
             // then read the input stream and parse the response.
+            Log.d("DEBUG_CHECKS", "Check 1");
             if (urlConnection.getResponseCode() == 200) {
+                Log.d("DEBUG_CHECKS", "Check 2");
+                Log.d("DEBUG_CHECKS", "makeHttpRequest: SUCCESS");
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
+                Log.d("DEBUG_CHECKS", "Check 3");
             } else {
-                Log.e(TAG, "Error response code: " + urlConnection.getResponseCode());
+                Log.d("DEBUG_CHECKS", "Check 4");
+                Log.e("DEBUG_CHECKS", "Error response code: " + urlConnection.getResponseCode());
+                Log.e("DEBUG_CHECKS", "Error response code: blah" );
+                Log.d("DEBUG_CHECKS", "Check 5");
+                inputStream = urlConnection.getErrorStream();
+                Log.d("DEBUG_CHECKS", "Check 6");
+                jsonResponse = readFromStream(inputStream);
+                Log.d("DEBUG_CHECKS", "JSON_RESPONSE: "+ jsonResponse);
+                Log.d("DEBUG_CHECKS", "Check 7");
             }
         } catch (IOException e) {
-            Log.e(TAG, "Problem retrieving the news JSON results.");
+            Log.e("DEBUG_CHECKS", "Problem retrieving the news JSON results: " + e.getMessage());
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

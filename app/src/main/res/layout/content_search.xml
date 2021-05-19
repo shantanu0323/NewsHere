@@ -271,6 +271,7 @@
             android:padding="10dp"
             android:scaleType="fitXY"
             android:src="@mipmap/ic_calendar"
+            android:visibility="gone"
             android:contentDescription="@string/filter" />
     </LinearLayout>
 

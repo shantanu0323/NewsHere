@@ -6,8 +6,8 @@ android {
         applicationId "com.shaan.newshere"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 2
-        versionName "2.0"
+        versionCode 3
+        versionName "3.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -31,6 +31,7 @@ dependencies {
     implementation 'com.eftimoff:android-viewpager-transformers:1.0.1@aar'
     implementation 'com.wang.avi:library:2.1.3'
     implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
+    implementation 'com.android.volley:volley:1.1.1'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
